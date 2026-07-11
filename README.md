@@ -75,7 +75,7 @@ python3 -m http.server 8000    # then open http://localhost:8000
 <summary><b>Security and privacy</b></summary>
 
 - HTTPS everywhere; per-user data isolation enforced by the Firestore rules above.
-- Data minimisation: only game progress is stored. No password is ever seen (Google handles it), no email is kept in the game database, no ads, no trackers, nothing sold.
+- Data minimisation: only game progress is stored. No password is ever seen (Google handles it), no email is kept in the game database, no ads, nothing sold; only aggregate Google Analytics (visit counts).
 - Spotify and Firebase tokens live only in the user's own browser.
 - Before a wider launch, fill in the contact email in `privacy.html` and `terms.html`, and have a lawyer review them for your jurisdiction.
 

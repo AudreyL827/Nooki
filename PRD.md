@@ -111,7 +111,7 @@ Nooki is a single-screen web app: a timer + music card on the left, the live iso
 
 ## 10. Privacy, security & trust
 
-- **Data minimization:** only game progress is stored; no email is persisted in the game database, no ads, no third-party trackers, nothing sold.
+- **Data minimization:** only game progress is stored; no email is persisted in the game database, no ads, nothing sold; only aggregate Google Analytics for visit counts.
 - **Per-user isolation:** Firestore security rules restrict every document to its owner (`request.auth.uid == uid`) — the guarantee that no account can read another's data. (Firebase web keys are public identifiers by design; safety is enforced by rules, not secrecy.)
 - **No password handling:** authentication is delegated to Google; Nooki never sees credentials. Spotify tokens live only in the user's browser.
 - **Transport:** HTTPS everywhere. Published Privacy Policy and Terms (no-warranty + liability limitation).
