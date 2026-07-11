@@ -484,7 +484,15 @@ function spotifyRedirectUri() { return location.origin + location.pathname; }
 // Optional accounts: paste your Firebase config JSON (Project settings → Web app).
 // Client keys here are public identifiers; per-user data is protected by
 // Firestore security rules (see README). Empty = game saves locally only.
-const FIREBASE_CONFIG_DEFAULT = null;
+const FIREBASE_CONFIG_DEFAULT = {
+  apiKey: "AIzaSyBm6bQLZvPtLh50seZVk6HTWXrHB1CX0IU",
+  authDomain: "nooki-e5186.firebaseapp.com",
+  projectId: "nooki-e5186",
+  storageBucket: "nooki-e5186.firebasestorage.app",
+  messagingSenderId: "526662969785",
+  appId: "1:526662969785:web:74092e7bf5a82706f06e68",
+  measurementId: "G-67T5DCN21D"
+};
 function firebaseConfig() { try { return JSON.parse(localStorage.getItem('nooki.firebase') || 'null') || FIREBASE_CONFIG_DEFAULT; } catch (e) { return FIREBASE_CONFIG_DEFAULT; } }
 
 class Component extends DCLogic {
@@ -997,7 +1005,7 @@ class Component extends DCLogic {
       // account · cloud save
       accountLabel: acctUser ? ('● ' + acctUser.name) : 'sign in',
       openAccount: () => { this.sfx('tap'); this.setState({ modal: 'account', acctCfgInput: '' }); },
-      closeAccount: () => this.setState({ modal: null }),
+      closeAccount: (e) => { if (!e || !e.currentTarget || e.target === e.currentTarget) this.setState({ modal: null }); },
       showAccount: S.modal === 'account',
       acctSignedIn: !!acctUser,
       acctName: acctUser ? acctUser.name : '',
