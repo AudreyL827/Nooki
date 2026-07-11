@@ -450,6 +450,29 @@
     </div>
   </sc-if>
 
+  <!-- first-run onboarding guide -->
+  <sc-if value="{{ showTour }}" hint-placeholder-val="{{ false }}">
+    <div style="position: fixed; inset: 0; background: rgba(60,56,36,.5); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; animation: fadein .3s both; z-index: 70; padding: 16px;">
+      <div style="background: #fbf6e8; border-radius: 26px; padding: 30px 30px 24px; width: 400px; max-width: 100%; text-align: center; box-shadow: 0 24px 60px rgba(40,36,20,.35); animation: popin .45s cubic-bezier(.22,1.2,.36,1) both; box-sizing: border-box;">
+        <div style="font-size: 46px; line-height: 1;">{{ tourEmoji }}</div>
+        <div style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 21px; color: #6c7150; margin-top: 10px;">{{ tourTitle }}</div>
+        <div style="font-size: 13.5px; line-height: 1.6; color: #8a8668; margin: 10px 6px 18px;">{{ tourBody }}</div>
+        <div style="display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 16px;">
+          <sc-for list="{{ tourDots }}" as="d" hint-placeholder-count="4">
+            <span style="width: 7px; height: 7px; border-radius: 50%; background: {{ d.bg }};"></span>
+          </sc-for>
+        </div>
+        <div style="display: flex; gap: 9px;">
+          <sc-if value="{{ tourShowBack }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ tourBack }}" style="font-weight: 500; font-size: 14px; color: #8a8668; background: #fdfaf0; border: 2px solid #dfd3ae; border-radius: 999px; padding: 11px 16px; cursor: pointer;">back</button>
+          </sc-if>
+          <button onClick="{{ tourNext }}" style="flex: 1; font-weight: 600; font-size: 15px; color: #fffdf2; background: linear-gradient(160deg, {{ btnL }}, {{ btnD }}); border: none; border-radius: 999px; padding: 11px 16px; cursor: pointer; box-shadow: inset 0 2px 0 rgba(255,255,255,.4);">{{ tourNextLabel }}</button>
+        </div>
+        <button onClick="{{ tourSkip }}" style="margin-top: 12px; border: none; background: none; font-size: 11.5px; color: #b3ae8b; cursor: pointer; text-decoration: underline;">skip for now</button>
+      </div>
+    </div>
+  </sc-if>
+
   <!-- footer -->
   <div style="margin-top: 18px; font-size: 11px; color: rgba(90,85,50,.45); display: flex; gap: 13px; align-items: center; flex-wrap: wrap; justify-content: center;">
     <a href="./privacy.html" style="color: rgba(90,85,50,.55);">privacy</a>
@@ -525,7 +548,8 @@ class Component extends DCLogic {
       this._int = setInterval(() => this.tick(), 300);
       this._onResize = () => this.setState({ vw: window.innerWidth });
       window.addEventListener('resize', this._onResize);
-      this.setState({ ready: true, vw: window.innerWidth });
+      let firstRun = false; try { firstRun = !localStorage.getItem('nooki.onboarded'); } catch (e) {}
+      this.setState({ ready: true, vw: window.innerWidth, modal: firstRun ? 'welcome' : null, tourStep: 0 });
     } catch (e) { console.error('prototype failed to load art library', e); }
   }
   componentWillUnmount() { if (this._int) clearInterval(this._int); if (this._onResize) window.removeEventListener('resize', this._onResize); }
@@ -557,28 +581,12 @@ class Component extends DCLogic {
 
   // ---------- save / load / seed ----------
   seed() {
-    const day = 86400000, now = Date.now();
-    const mk = (key, title, daysAgo, mins) => ({ key, title, date: new Date(now - daysAgo * day).toISOString(), mins: mins || 25 });
-    const kitchenWins = [
-      'outlined my thesis intro', 'read 30 pages of bio', 'flashcards: all of ch. 5', 'wrote the lab abstract',
-      'practice test, 82%!', 'cleaned my citations', 'french vocab, 60 words', 'problem set q1 to q8',
-      'rewrote the messy proof', 'emailed prof (finally)', 'annotated two papers', 'built the study guide',
-      'stats homework done', 'memorized krebs cycle', 'drafted the conclusion', 'reviewed a whole semester of notes'
-    ];
-    const bedroomWins = [
-      'planned the week ahead', 'read 40 pages of orgo', 'wrote 500 words', 'debugged the assignment',
-      'chem problem set done', 'made lecture summaries', 'group project slides', 'practiced presentation twice',
-      'inbox zero, for once', 'linear algebra drills', 'essay outline v2', 'read the assigned novel chunk',
-      'lab report figures', 'quizzed myself on dates', 'polished the bibliography', 'one full past paper'
-    ];
-    const kFurn = this.setsById.kitchen.FURN, bFurn = this.setsById.bedroom.FURN, mFurn = this.clay.FURN;
-    const matchaWins = ['set up my study plan', 'calc review, 2 chapters', 'wrote the intro paragraph', 'vocab flashcards round 1', 'finished the reading list'];
+    // new players start with every room empty — a fresh set of blueprints to build
     return {
       houses: {
-        matcha: { built: mFurn.slice(0, 5).map((f, i) => mk(f.key, matchaWins[i], 5 - i)), archives: [] },
-        strawberry: { built: kFurn.map((f, i) => mk(f.key, kitchenWins[i], 40 - i * 2)), archives: [] },
-        lavender: { built: bFurn.map((f, i) => mk(f.key, bedroomWins[i], 74 - i * 3)), archives: [] },
-        honey: { built: [], archives: [] }, seaside: { built: [], archives: [] }, cocoa: { built: [], archives: [] }
+        matcha: { built: [], archives: [] }, strawberry: { built: [], archives: [] },
+        lavender: { built: [], archives: [] }, honey: { built: [], archives: [] },
+        seaside: { built: [], archives: [] }, cocoa: { built: [], archives: [] }
       },
       houseId: 'matcha', companion: 'bunny'
     };
@@ -846,6 +854,16 @@ class Component extends DCLogic {
     const acctEnabled = !!(cl && cl.enabled());
     const acctErr = cl ? cl.error() : null;
 
+    // first-run onboarding tour
+    const TOUR = [
+      { e: '🐻', t: 'welcome to nooki', b: 'a calmer way to focus. every study session builds a tiny clay room, one piece of furniture at a time.' },
+      { e: '⏳', t: 'focus to build', b: 'pick 25 or 50 minutes and press start. your companion hops over and hammers while you work — finish the session, earn the piece.' },
+      { e: '✎', t: 'name your wins', b: 'each finished piece asks what you got done. those little notes become a journal of wins you can look back on.' },
+      { e: '🏡', t: 'make it yours', b: 'complete rooms to unlock new builders, sign in to save across devices, and connect Spotify to play your own music.' }
+    ];
+    const ts = Math.max(0, Math.min(TOUR.length - 1, S.tourStep || 0));
+    const finishTour = () => { try { localStorage.setItem('nooki.onboarded', '1'); } catch (e) {} this.setState({ modal: null, tourStep: 0 }); };
+
     // screens: house cards + notebook
     const mkMini = (hid, opts) => clay.room(Object.assign({
       theme: this.themeOf(hid), set: this.setOf(hid), built: this.builtKeys(hid),
@@ -1024,6 +1042,15 @@ class Component extends DCLogic {
         this.setState({ modal: null });
       },
       acctError: !!acctErr, acctErrorMsg: this.accountErrText(acctErr),
+      // onboarding tour
+      showTour: S.modal === 'welcome',
+      tourEmoji: TOUR[ts].e, tourTitle: TOUR[ts].t, tourBody: TOUR[ts].b,
+      tourDots: TOUR.map((_, i) => ({ bg: i === ts ? T.clay : 'rgba(90,85,50,.2)' })),
+      tourShowBack: ts > 0,
+      tourBack: () => { this.sfx('tap'); this.setState({ tourStep: ts - 1 }); },
+      tourNext: () => { this.sfx('tap'); if (ts >= TOUR.length - 1) finishTour(); else this.setState({ tourStep: ts + 1 }); },
+      tourNextLabel: ts >= TOUR.length - 1 ? 'start building ♡' : 'next',
+      tourSkip: finishTour,
       // house cards
       houseCards, notebookCards
     }, pageVals);
