@@ -22,6 +22,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Nunito:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
 <style>
   html, body { margin: 0; padding: 0; font-family: "Nunito", sans-serif; }
+  /* native-app feel: no tap flash, no rubber-band scroll, no text-select except inputs */
+  * { -webkit-tap-highlight-color: transparent; }
+  html, body { overscroll-behavior: none; }
+  body { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+  input, textarea { -webkit-user-select: text; user-select: text; }
   a { color: #6c7150; } a:hover { color: #4f543a; }
   button { font-family: "Fredoka", sans-serif; }
   input { font-family: "Nunito", sans-serif; }
@@ -59,7 +64,7 @@
 </style>
 </helmet>
 
-<div data-screen-label="App" style="min-height: 100vh; background: {{ bg }}; transition: background 1s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 14px 20px 22px; box-sizing: border-box;">
+<div data-screen-label="App" style="min-height: 100vh; background: {{ bg }}; transition: background 1s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: calc(14px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) calc(22px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left)); box-sizing: border-box;">
 
   <!-- top bar: brand + account -->
   <div style="width: 100%; max-width: 1360px; position: relative; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; box-sizing: border-box;">
@@ -556,6 +561,10 @@ class Component extends DCLogic {
 
   // ---------- audio (UI sound effects) ----------
   sfx(n) { try { if (this.audio) this.audio.sfx(n); } catch (e) {} }
+  // phone / desktop notifications (works in the installed PWA; becomes native on-device
+  // via Capacitor Local Notifications when packaged for the App Store)
+  askNotify() { try { if (typeof Notification !== 'undefined' && Notification.permission === 'default') Notification.requestPermission(); } catch (e) {} }
+  notify(title, body) { try { if (typeof Notification !== 'undefined' && Notification.permission === 'granted') new Notification(title, { body, icon: './icon-180.png', badge: './icon-180.png', tag: 'nooki' }); } catch (e) {} }
 
   // ---------- spotify ----------
   initSpotify() {
@@ -710,6 +719,7 @@ class Component extends DCLogic {
     const cnt = this.state.focusCount + 1;
     this.setState({ running: false, phase: 'idle', leftS: 0, celebrating: true, justBuilt: nf.key, focusCount: cnt });
     this.sfx('complete');
+    this.notify('nooki ✦ session done', 'your ' + (nf.label ? nf.label.toLowerCase() : 'piece') + ' is built — name your win ♡');
     this._conf = this.clay.confetti('cf' + Date.now(), { n: 34, spread: 200 });
     const complete = this.state.houses[id].built.length >= this.furnOf(id).length;
     if (this.state.auto) {
@@ -762,6 +772,7 @@ class Component extends DCLogic {
   }
   breakDone() {
     if (this.state.auto && this.state.screen === 'game' && this.nextFurn(this.state.houseId) && this.state.modal !== 'quit') { this.startFocus(); return; }
+    this.notify('nooki ✦ break over', 'ready for the next session? ♡');
     this.setState({ phase: 'idle', running: false, leftS: 0 });
   }
 
@@ -937,7 +948,7 @@ class Component extends DCLogic {
       // timer controls
       showStart: S.phase === 'idle' && !!nf, startLabel: bk.length === 0 ? 'start the first session ♡' : 'start focus ♡',
       showPause: inFocus, pauseLabel: S.running ? 'pause' : 'resume', paused: inFocus && !S.running,
-      startFocus: () => { if (this.audio) this.audio.resume(); this.sfx('start'); this.startFocus(); },
+      startFocus: () => { if (this.audio) this.audio.resume(); this.askNotify(); this.sfx('start'); this.startFocus(); },
       togglePause: () => { this._last = Date.now(); this.sfx('tap'); this.setState({ running: !S.running }); },
       giveUp: () => { this.sfx('tap'); this.setState({ modal: 'quit', running: false }); },
       confirmQuit: () => this.setState({ modal: null, phase: 'idle', running: false, leftS: 0 }),
