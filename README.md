@@ -6,7 +6,7 @@ the cat, or **Maple the bear**) hops over and hammers while you study. Finished
 pieces get "named" with what you got done, becoming a little journal of wins.
 Six houses, six room types, one hue family each.
 
-**Live app:** https://audreyl827.github.io/nooki/
+**Live app:** https://audreyl827.github.io/Nooki/
 
 ## Features
 - 25·5 classic / 50·10 deep pomodoro modes with auto-continue
@@ -61,7 +61,7 @@ need a free developer app that **you** own — paste the credentials into the ap
 
 ### B. Spotify (play your own music)
 1. Create an app at <https://developer.spotify.com/dashboard>.
-2. Add this **Redirect URI** exactly: `https://audreyl827.github.io/nooki/`
+2. Add this **Redirect URI** exactly: `https://audreyl827.github.io/Nooki/`
    (and your `http://localhost:PORT/...` URL for local testing).
 3. Copy the **Client ID**; in Nooki click **connect spotify → spotify setup**, paste it.
 4. Playback in the browser requires **Spotify Premium** (Spotify's rule, not ours).

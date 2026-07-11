@@ -157,19 +157,17 @@ export function makeSets2(React, clay) {
   };
 
   CD.fern = (T, g) => {
-    // arching frond that droops down and out from the pot
-    const frond = (lft, rot, len, dl) => h('span', { key: 'f' + lft + rot, style: { position: 'absolute', left: lft + 'px', top: '22px', width: '8px', height: len + 'px', transformOrigin: '50% 0', transform: `rotate(${rot}deg)` } },
-      h('span', { style: { position: 'absolute', inset: '0', borderRadius: '4px 4px 50% 50%', background: 'linear-gradient(180deg, #9cb887, #6f9159)', boxShadow: 'inset -1px 0 2px rgba(0,0,0,.1)', transformOrigin: '50% 0', animation: g ? 'none' : `sway ${4.2 + dl}s ease-in-out ${dl}s infinite` } }));
-    return [onWallR('cfn', 30, 106, 58, 62,
+    // wall planter with slim trailing tendrils of little leaves (reads as a plant, not a blob)
+    const strand = (lft, n, tilt, dl) => h('div', { key: 's' + lft, style: { position: 'absolute', left: lft + 'px', top: '28px', width: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center', transformOrigin: '50% 0', transform: `rotate(${tilt}deg)`, animation: g ? 'none' : `sway ${4 + dl}s ease-in-out ${dl}s infinite` } },
+      [h('span', { key: 'st', style: { width: '2px', height: '5px', background: '#6f8a55', borderRadius: '1px' } })].concat(
+        Array.from({ length: n }, (_, i) => h('span', { key: i, style: { width: '9px', height: '8px', margin: '-1.5px 0', borderRadius: '62% 62% 60% 40% / 66% 66% 40% 40%', background: i % 2 ? '#8fa070' : '#7e9660', boxShadow: 'inset -1px -1px 1px rgba(0,0,0,.12)', transform: `rotate(${i % 2 ? 24 : -24}deg)` } }))));
+    return [onWallR('cfn', 34, 106, 52, 62,
       h('div', { style: Object.assign({ position: 'absolute', inset: '0' }, gf(g)) }, [
-        // wall bracket + hook
-        h('span', { key: 'br', style: { position: 'absolute', left: '5px', top: '2px', width: '22px', height: '4px', borderRadius: '2px', background: sh(T.woodD, .06), boxShadow: 'inset 0 1px 1px rgba(255,255,255,.5)' } }),
-        h('span', { key: 'hk', style: { position: 'absolute', left: '23px', top: '4px', width: '3px', height: '9px', background: '#c9b58e', borderRadius: '2px' } }),
+        h('span', { key: 'hk', style: { position: 'absolute', left: '24px', top: '0', width: '3px', height: '10px', background: '#c9b58e', borderRadius: '2px' } }),
         // terracotta pot
-        h('span', { key: 'pot', style: { position: 'absolute', left: '11px', top: '12px', width: '28px', height: '17px', borderRadius: '6px 6px 12px 12px', background: `radial-gradient(circle at 38% 25%, ${sh(T.wood, .2)}, ${T.wood})`, boxShadow: 'inset 2px 2px 3px rgba(255,255,255,.5), inset -3px -4px 6px rgba(150,116,60,.22)' } },
+        h('span', { key: 'pot', style: { position: 'absolute', left: '12px', top: '9px', width: '26px', height: '17px', borderRadius: '6px 6px 12px 12px', background: `radial-gradient(circle at 38% 25%, ${sh(T.wood, .2)}, ${T.wood})`, boxShadow: 'inset 2px 2px 3px rgba(255,255,255,.5), inset -3px -4px 6px rgba(150,116,60,.22)' } },
           h('span', { style: { position: 'absolute', left: '-2px', top: '-2px', right: '-2px', height: '6px', borderRadius: '4px', background: sh(T.wood, .1) } })),
-        // drooping fronds
-        frond(6, -40, 30, 0), frond(13, -18, 36, .4), frond(22, 0, 40, .8), frond(31, 18, 36, 1.2), frond(40, 40, 30, 1.6)
+        strand(13, 6, -13, 0), strand(21, 7, 0, .5), strand(30, 6, 13, 1)
       ]))];
   };
 
@@ -501,7 +499,7 @@ export function makeSets2(React, clay) {
       h('span', { key: 'y2', style: { position: 'absolute', left: '21px', top: '12px', width: '2.5px', height: '2.5px', borderRadius: '50%', background: '#4b3a2c' } }),
       h('span', { key: 'mz', style: { position: 'absolute', left: '15.5px', top: '15px', width: '6px', height: '5px', borderRadius: '50%', background: '#ecd2ae' } })
     ]);
-    return [sprite('fbp', 236, 250, 0, node), g ? null : shadowOval('fbps', 236, 251, 30, 13, .16)].filter(Boolean);
+    return [sprite('fbp', 292, 150, 0, node), g ? null : shadowOval('fbps', 292, 151, 30, 13, .16)].filter(Boolean);
   };
 
   FD.cauldron = (T, g) => {
@@ -545,7 +543,7 @@ export function makeSets2(React, clay) {
     { key: 'acornshelf', label: 'Acorn Shelf', icon: '🐿', cx: 100, cy: 20, fw: 82, fd: 28, bx: 100, by: 72, wall: true, fx: 100, fy: -115 },
     { key: 'herbs', label: 'Herb Drying Rack', icon: '🌾', cx: 24, cy: 240, fw: 30, fd: 94, bx: 66, by: 240, wall: true, fx: 240, fy: -116 },
     { key: 'lantern', label: 'Storm Lantern', icon: '🏮', cx: 112, cy: 252, fw: 30, fd: 22, bx: 140, by: 268, sdy: 22 },
-    { key: 'bearplush', label: 'Bear Plush', icon: '🧸', cx: 236, cy: 250, fw: 34, fd: 26, bx: 236, by: 272, sdy: 24 },
+    { key: 'bearplush', label: 'Bear Plush', icon: '🧸', cx: 292, cy: 150, fw: 34, fd: 26, bx: 268, by: 176, sdy: 24 },
     { key: 'cauldron', label: 'Tea Cauldron', icon: '🫖', cx: 54, cy: 250, fw: 44, fd: 40, bx: 96, by: 262, sdy: 16 },
     { key: 'basket', label: 'Woven Basket', icon: '🧺', cx: 271, cy: 231, fw: 44, fd: 40, bx: 246, by: 258, sdy: 10 },
     { key: 'stars', label: 'Star Strand', icon: '✨', cx: 206, cy: 20, fw: 106, fd: 26, bx: 206, by: 72, wall: true, fx: 206, fy: -163 }
