@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Nooki — PRD</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&family=Nunito:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #efe9d8; }
+  a { color: #6c7150; } a:hover { color: #4f543a; }
+</style>
+</helmet>
+
+<x-import component-from-global-scope="doc-page" from="./assets/doc-page.js" size="letter" margin="0.8in" hint-size="100%,1400px">
+  <div style="font-family: 'Nunito', sans-serif; color: #4a4636; font-size: 14.5px; line-height: 1.62;">
+
+    <h1 style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 30px; color: #6c7150; margin: 0 0 2px;">Cozy Pomodoro Study Game · PRD</h1>
+    <div style="font-size: 13px; color: #8a8668; margin-bottom: 18px;">v0.9 draft · july 9, 2026 · working title pending (see naming shortlist) · companion docs: <b>Animation Assets</b> sheet + interactive prototype</div>
+
+    <h2 style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 20px; color: #6c7150; margin: 22px 0 8px;">1 · Vision</h2>
+    <p style="margin: 0 0 10px;">A pomodoro timer that turns studying into decorating. Each 25 minute focus session is one piece of furniture: a chibi blob companion hops to a blueprint shadow in a tiny clay room and builds it while you work. Finish the session and the piece pops in with confetti, you name the win ("read 40 pages of orgo"), and it is journaled forever inside that furniture. Fill all 16 shadows and the house is complete, shelved into a notebook of little houses you can revisit like a photo album of your effort.</p>
+    <p style="margin: 0 0 10px;">Inspiration: My Sticker Room (blueprint shadows, item by item joy), Animal Crossing (gentle pace, personality, music), soft air-dry-clay 3D miniatures (the matcha living room reference). The whole app shares one coherent matte clay texture; nothing glossy, nothing sharp, nothing urgent.</p>
+
+    <h2 style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 20px; color: #6c7150; margin: 22px 0 8px;">2 · Goals / non-goals</h2>
+    <ul style="margin: 0 0 10px; padding-left: 22px;">
+      <li><b>Goals:</b> make starting a session feel like opening a game, not a chore; give every session a permanent, visible, named artifact; keep audio and motion calm enough to study to; make the collection (notebook) the emotional payoff.</li>
+      <li><b>Non-goals (v1):</b> social features, leaderboards, streak shaming, paid cosmetics, mobile apps (responsive web only), accounts (local save first, sync later).</li>
+    </ul>
+
+    <h2 style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 20px; color: #6c7150; margin: 22px 0 8px;">3 · Core loop</h2>
+    <ol style="margin: 0 0 10px; padding-left: 22px;">
+      <li>Pick a house (any of the six, in any order, any mix of progress).</li>
+      <li>Press start. The companion hops to the next blueprint shadow and hammers away for the whole focus session. The shadow pulses softly.</li>
+      <li>Session completes: furniture drops in with a squashy bounce, confetti bursts, companion cheers.</li>
+      <li>Naming modal appears: "name this win". One line of text, date and focus minutes auto-attached. Saved into that furniture.</li>
+      <li>Break starts automatically (skippable). Companion naps or sips tea.</li>
+      <li>16th piece: house-complete celebration, tap anywhere and the house zooms into the notebook (like an item zooming into a cart).</li>
+    </ol>
+
+    <h2 style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 20px; color: #6c7150; margin: 22px 0 8px;">4 · Timer rules</h2>
+    <ul style="margin: 0 0 10px; padding-left: 22px;">
+      <li><b>Classic mode:</b> 25 min focus · 5 min break · 15 min long break after every 4th focus.</li>
+      <li><b>Deep mode:</b> 50 min focus · 10 min break · 15 min long break after every 3rd focus.</li>
+      <li><b>Pause:</b> always allowed, no penalty. The build pauses with you (hammering stops, "paused, no penalty" microcopy).</li>
+      <li><b>Auto continue (toggle):</b> sessions flow without stopping: focus rolls into break, break rolls into the next focus. Finished pieces queue as a floating chip ("the sofa is built! tap to name your win · 2 more waiting"); tapping it opens the naming modal, which chains through the queue. Off by default.</li>
+      <li><b>Give up:</b> ending a focus session early triggers a confirm modal: the furniture will not be finished, and building it requires a fresh full session. No partial credit, by design (the session is the unit of reward).</li>
+      <li><b>Breaks:</b> skippable at any time. Breaks never affect furniture.</li>
+      <li><b>Background behavior:</b> timer runs on absolute timestamps (survives tab throttling); tab title shows mm:ss + piece name; optional soft chime + browser notification at session end.</li>
+      <li>Mode can only be changed while idle, never mid-session.</li>
+    </ul>
+
+    <h2 style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 20px; color: #6c7150; margin: 22px 0 8px;">5 · Houses: six rooms, six moods</h2>
+    <p style="margin: 0 0 8px;">Every house is a different <b>room type</b> with its own 16-piece furniture set, layout, palette and playlist. Never a recolor. Full art per set lives in the Animation Assets sheet; build order below is the reward order.</p>
+    <table style="width: 100%; border-collapse: collapse; font-size: 12.5px; margin: 0 0 10px;">
+      <tr style="background: #f3ecd6; font-family: 'Fredoka', sans-serif; color: #6c7150;">
+        <th style="text-align: left; padding: 7px 9px; border: 1px solid #e0d6b8;">House</th>
+        <th style="text-align: left; padding: 7px 9px; border: 1px solid #e0d6b8;">Room type</th>
+        <th style="text-align: left; padding: 7px 9px; border: 1px solid #e0d6b8;">Palette mood</th>
+        <th style="text-align: left; padding: 7px 9px; border: 1px solid #e0d6b8;">Built-in playlist</th>
+        <th style="text-align: left; padding: 7px 9px; border: 1px solid #e0d6b8;">Signature pieces</th>
+      </tr>
+      <tr><td style="padding: 6px 9px; border: 1px solid #e0d6b8;">🍵 Matcha Cottage</td><td style="padding: 6px 9px; border: 1px solid #e0d6b8;">Living room</td><td style="padding: 6px 9px; border: 1px solid #e0d6b8;">sage green, warm cream</td><td style="padding: 6px 9px; border: 1px solid #e0d6b8;">warm tea lofi</td><td style="padding: 6px 9px; border: 1px solid #e0d6b8;">squishy sofa, window &amp; curtains, tea set</td></tr>
+      <tr><td style="padding: 6px 9px; border: 1px solid #e0d6b8;">🍓 Strawberry Loft</td><td style="padding: 6px 9px; border: 1px solid #e0d6b8;">Kitchen</td><td style="padding: 6px 9px; border: 1px solid #e0d6b8;">blush pink, butter</td><td style="padding: 6px 9px; border: 1px solid #e0d6b8;">sugar rush beats</td><td style="padding: 6px 9px; border: 1px solid #e0d6b8;">round fridge, baking island, cake stand</td></tr>
+      <tr><td style="padding: 6px 9px; border: 1px solid #e0d6b8;">🌙 Lavender Nook</td><td style="padding: 6px 9px; border: 1px solid #e0d6b8;">Bedroom</td><td style="padding: 6px 9px; border: 1px solid #e0d6b8;">periwinkle, dusk</td><td style="padding: 6px 9px; border: 1px solid #e0d6b8;">moonlight lullaby lofi</td><td style="padding: 6px 9px; border: 1px solid #e0d6b8;">dream bed, moon window, fairy lights</td></tr>
+      <tr><td style="padding: 6px 9px; border: 1px solid #e0d6b8;">🍯 Honey Café</td><td style="padding: 6px 9px; border: 1px solid #e0d6b8;">Café</td><td style="padding: 6px 9px; border: 1px solid #e0d6b8;">butter yellow, gold</td><td style="padding: 6px 9px; border: 1px solid #e0d6b8;">morning café jazzhop</td><td style="padding: 6px 9px; border: 1px solid #e0d6b8;">espresso machine, awning window, 'open' sign</td></tr>
+      <tr><td style="padding: 6px 9px; border: 1px solid #e0d6b8;">🌊 Seaside Study</td><td style="padding: 6px 9px; border: 1px solid #e0d6b8;">Beach studio</td><td style="padding: 6px 9px; border: 1px solid #e0d6b8;">seafoam, sand</td><td style="padding: 6px 9px; border: 1px solid #e0d6b8;">tidal chill</td><td style="padding: 6px 9px; border: 1px solid #e0d6b8;">hammock, sea window, surfboard</td></tr>
+      <tr><td style="padding: 6px 9px; border: 1px solid #e0d6b8;">🍂 Cocoa Cabin</td><td style="padding: 6px 9px; border: 1px solid #e0d6b8;">Forest cabin</td><td style="padding: 6px 9px; border: 1px solid #e0d6b8;">cocoa, caramel, moss</td><td style="padding: 6px 9px; border: 1px solid #e0d6b8;">fireside crackle lofi</td><td style="padding: 6px 9px; border: 1px solid #e0d6b8;">stone fireplace, mushroom lamp, tea cauldron</td></tr>
+    </table>
+    <ul style="margin: 0 0 10px; padding-left: 22px;">
+      <li><b>Parallel progress:</b> houses do not gate each other. A player can be 4/16 in the kitchen, hop to the cabin, come back weeks later. Progress is saved per house; "switch house" is one tap and never costs anything (switching mid-session is blocked behind the give-up confirm).</li>
+      <li><b>Rebuild:</b> a completed house can be rebuilt. The room resets to blueprints for a fresh run; all previous journal entries stay archived in the notebook under that house ("build #1", "build #2"). Rebuild count shows on the notebook card.</li>
+      <li><b>Future:</b> more houses ship as content drops (greenhouse, observatory, bookshop). The engine treats a house as data: palette + furniture set + playlist.</li>
+    </ul>
+
+    <h2 style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 20px; color: #6c7150; margin: 22px 0 8px;">6 · Companions</h2>
+    <ul style="margin: 0 0 10px; padding-left: 22px;">
+      <li><b>Mochi the bunny</b> (default): soft white blob, stubby ears, dot eyes, blush.</li>
+      <li><b>Suki the cat</b>: unlocks after 1 completed house. Cream body, short rounded ears with pink inner tips, whiskers, curled tail.</li>
+      <li><b>Maple the fox</b>: unlocks after 3 completed houses. Rust clay body (terracotta figurine reference), cream ear tips and muzzle, white-tipped tail.</li>
+      <li>All three share one rig and pose set: idle bob, hop, build (mallet + dust puffs), nap (droopy ears + z's), tea sip (steam), cheer (jump + sparkles). Exact keyframes and timings are in the asset sheet.</li>
+      <li>Switching is free once unlocked (picker under the room). Locked companions show a padlock and the unlock condition.</li>
+    </ul>
+
+    <h2 style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 20px; color: #6c7150; margin: 22px 0 8px;">7 · Notebook &amp; journal of wins</h2>
+    <ul style="margin: 0 0 10px; padding-left: 22px;">
+      <li>The notebook is the collection screen: all six houses as cards, complete ones with a gold "complete ✦" badge and rebuild count.</li>
+      <li>Opening a house shows the full room plus its journal: one entry per furniture with icon, furniture name, the win the player wrote, date, and focus minutes.</li>
+      <li>Entries are immutable history (editable text, never deletable by accident; delete requires a confirm and is v1.1).</li>
+      <li>The house-complete moment transitions here with a zoom (room scales into its notebook card, cart-like).</li>
+      <li>Empty states stay warm: an unstarted house card reads "not started" with its blueprint room faintly visible.</li>
+    </ul>
+
+    <h2 style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 20px; color: #6c7150; margin: 22px 0 8px;">8 · Audio design</h2>
+    <p style="margin: 0 0 8px;"><b>Principle: the music is furniture too.</b> Calm, loopable, low-information sound that supports studying. Nothing with lyrics, nothing above ~75 bpm perceived energy, generous low-pass warmth, vinyl hiss acceptable at low level.</p>
+    <ul style="margin: 0 0 10px; padding-left: 22px;">
+      <li><b>Per-room playlists</b> (built-in, 6 to 10 tracks each, licensed lofi or commissioned):
+        <ul style="padding-left: 18px; margin: 4px 0;">
+          <li>warm tea lofi (matcha): brushed drums, rhodes, kalimba, rain on leaves bed.</li>
+          <li>sugar rush beats (strawberry): brighter keys, soft swing, kitchen foley accents (whisk, jar pops) buried low.</li>
+          <li>moonlight lullaby lofi (lavender): music-box motifs, pads, slow 60 bpm, night crickets bed.</li>
+          <li>morning café jazzhop (honey): upright bass, muted trumpet samples, espresso machine hiss as texture.</li>
+          <li>tidal chill (seaside): tape-saturated guitar, seagull and wave bed, 65 bpm.</li>
+          <li>fireside crackle lofi (cocoa): fire crackle bed, warm cello loops, creaky wood accents.</li>
+        </ul>
+      </li>
+      <li><b>Ambient layer toggle:</b> rain / fireplace / birdsong / waves can be layered under any playlist at independent volume (Animal Crossing hourly-music feeling without the schedule).</li>
+      <li><b>UI stingers</b> (the only playful, AC-style notes): soft pop on button taps, two-note marimba on session start, gentle windchime + confetti pop on furniture complete, warm 4-note music-box phrase on house complete, tiny snore loop during nap breaks. All stingers duck the music by 6 dB for 1 s.</li>
+      <li><b>Rules:</b> music volume, stinger volume, ambient volume are separate sliders; everything persists; total silence is a fully supported mode; no audio ever autoplays before first user gesture (browser policy).</li>
+    </ul>
+
+    <h2 style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 20px; color: #6c7150; margin: 22px 0 8px;">9 · Spotify integration</h2>
+    <ul style="margin: 0 0 10px; padding-left: 22px;">
+      <li><b>Link account:</b> OAuth 2.0 Authorization Code with PKCE (client-side friendly, no secret). Scopes: <code>streaming, user-read-playback-state, user-modify-playback-state, user-read-currently-playing, playlist-read-private</code>. Tokens stored locally, refresh handled silently, one-tap unlink wipes them.</li>
+      <li><b>Playback:</b> Spotify Web Playback SDK registers the app as a device ("Cozy Pomodoro 🎧"). Requires Spotify Premium; free accounts get a clear, kind explainer and remote-control mode (play/pause/skip of their active device) where allowed.</li>
+      <li><b>In-game controls:</b> the music card swaps to Spotify mode: current track + art, play/pause/skip, search-lite to queue songs, "queue next" list. Room playlists remain one tap away ("back to warm tea lofi").</li>
+      <li><b>Suggested pairing:</b> each room offers a curated public Spotify playlist matching its built-in mood, one tap to play.</li>
+      <li><b>Stingers still fire</b> over Spotify audio (we cannot duck Spotify; stingers are mixed quiet).</li>
+      <li><b>Privacy:</b> we never store listening history server-side in v1; everything stays in the browser.</li>
+    </ul>
+
+    <h2 style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 20px; color: #6c7150; margin: 22px 0 8px;">10 · Visual &amp; motion spec</h2>
+    <ul style="margin: 0 0 10px; padding-left: 22px;">
+      <li><b>Material:</b> matte air-dry clay. Rounded everything, soft top-light, gentle ambient occlusion at contact points, zero specular highlights beyond a soft sheen. One hue family per house plus warm whites; accents share lightness/chroma across themes.</li>
+      <li><b>Rooms:</b> corner view, two thick walls + floor slab with rounded outer edges, interior fully open to camera (the matcha reference framing). Orthographic-feel camera, no perspective distortion.</li>
+      <li><b>Type:</b> Fredoka 500/600 for display and digits, Nunito for body. Titles render as individually floating letters (3.2s loop, 0.16s stagger, ±8px, ±2.5deg) with a soft clay gradient fill and stacked drop shadows. Timer digits sit in fixed-width slots; the group bobs as one. Display text color always follows the active house ink.</li>
+      <li><b>Key animations</b> (names match asset sheet + prototype keyframes): blueprint pulse 1.8s; build swing 1.1s with dust puffs; drop-in 0.8s squash bounce; confetti burst 0.9 to 1.5s; cheer 0.85s; nap breathe 3.2s; per-room idle motion (curtain sway, glow pulses, steam, twinkles) always subtle and below 1Hz.</li>
+      <li><b>Celebrations:</b> furniture complete = confetti + cheer + naming modal after 1.3s. House complete = full-screen dim, big confetti, tap-anywhere, zoom-to-notebook.</li>
+    </ul>
+
+    <h2 style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 20px; color: #6c7150; margin: 22px 0 8px;">11 · Data model (local save v1)</h2>
+    <pre style="background: #f3ecd6; border-radius: 10px; padding: 12px 14px; font-size: 11.5px; line-height: 1.5; overflow-x: auto; margin: 0 0 10px;">{
+  "houses": {
+    "matcha":     { "built": [ { "key": "window", "title": "read 40 pages of orgo",
+                                 "date": "2026-07-09T14:12:00Z", "mins": 25 } ],
+                    "archives": [ [ ...previous completed build entries... ] ] },
+    "strawberry": { "built": [...], "archives": [] }, ...
+  },
+  "houseId": "matcha",            // current house
+  "companion": "bunny",           // bunny | cat | fox
+  "settings": { "mode": "classic", "musicVol": .7, "stingerVol": .5,
+                "ambient": { "kind": "rain", "vol": .3 }, "spotifyLinked": false }
+}</pre>
+    <p style="margin: 0 0 10px;">Derived values (never stored): completed count = houses where built.length equals set size, plus archives; companion unlocks from completed count. Save on every mutation; localStorage first, account sync is a later milestone.</p>
+
+    <h2 style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 20px; color: #6c7150; margin: 22px 0 8px;">12 · Screens</h2>
+    <ul style="margin: 0 0 10px; padding-left: 22px;">
+      <li><b>Game</b> (default): timer + music card left, room center with floating house title and companion picker, blueprint/wins list right.</li>
+      <li><b>House picker:</b> six cards with live mini rooms, progress bars, continue / start / rebuild actions.</li>
+      <li><b>Notebook:</b> collection grid; tap into a <b>house page</b> (room + full journal + archive note).</li>
+      <li><b>Overlays:</b> break (companion naps/sips, countdown, skip), naming modal, give-up confirm, rebuild confirm, house-complete celebration.</li>
+      <li>Responsive: three columns collapse to stacked layout under 1100px; room scales to fit; mobile is functional but desktop is the hero.</li>
+    </ul>
+
+    <h2 style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 20px; color: #6c7150; margin: 22px 0 8px;">13 · Tech notes for the three.js build</h2>
+    <ul style="margin: 0 0 10px; padding-left: 22px;">
+      <li><b>Stack:</b> Vite + React + three.js (react-three-fiber recommended) + zustand for game state + localStorage persistence middleware.</li>
+      <li><b>Clay material:</b> MeshToonMaterial or MeshStandardMaterial with low roughness contrast, a 2 to 3 step gradient map, and a subtle matcap blend; RoundedBoxGeometry everywhere; baked-blur contact shadows (planes with radial alpha) instead of real shadow maps for softness and perf.</li>
+      <li><b>Camera:</b> OrthographicCamera at the reference angle (rotX ≈ 58°, rotZ ≈ 45° equivalent, corner at the back so the interior opens toward the viewer), fixed; the DOM prototype's floor coordinates (300 × 300 per room) map 1:1 to world units.</li>
+      <li><b>Companion:</b> a billboarded rig or simple 3D blob set; poses as small keyframe clips mirroring the CSS keyframes (names and timings in the asset sheet transfer directly).</li>
+      <li><b>Timer correctness:</b> compute from Date.now deltas in a Web Worker; never trust setInterval cadence in a throttled tab.</li>
+      <li><b>Furniture as data:</b> each piece = { key, label, icon, position, footprint, buildOrder, mesh }; a house = { palette, set, playlist }. The prototype's catalogs (clay.js, sets.js, sets2.js) are the source of truth to port.</li>
+      <li><b>Reduced motion:</b> respect prefers-reduced-motion (freeze floats, keep opacity pulses).</li>
+    </ul>
+
+    <h2 style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 20px; color: #6c7150; margin: 22px 0 8px;">14 · Milestones</h2>
+    <ol style="margin: 0 0 10px; padding-left: 22px;">
+      <li><b>M0:</b> port matcha living room + timer loop + naming journal (parity with this prototype, one house).</li>
+      <li><b>M1:</b> all six houses, notebook, rebuild, companions + unlocks, local save.</li>
+      <li><b>M2:</b> built-in audio (playlists, ambient layers, stingers) + settings.</li>
+      <li><b>M3:</b> Spotify link (PKCE + Web Playback SDK + queue UI).</li>
+      <li><b>M4:</b> polish: reduced motion, notifications, tab title, onboarding, content drop pipeline.</li>
+    </ol>
+
+    <h2 style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 20px; color: #6c7150; margin: 22px 0 8px;">15 · Open questions</h2>
+    <ul style="margin: 0 0 6px; padding-left: 22px;">
+      <li>Final name (shortlist under review: burrow, snugden, pomodorm, minute manor, hophouse, den &amp; done).</li>
+      <li>Should give-up keep a faint "half-built" scaffold as gentle motivation, or stay all-or-nothing?</li>
+      <li>Do rebuilds change anything cosmetic (golden trim on build #2 furniture?) to reward repetition?</li>
+      <li>Long-term: user-arranged furniture placement vs fixed layouts (fixed for v1).</li>
+      <li>Commission original loops vs license a lofi catalog for the built-in playlists.</li>
+    </ul>
+  </div>
+</x-import>
+
+</x-dc>
+</body>
+</html>

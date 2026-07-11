@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nooki</title>
+<meta name="description" content="A cozy pomodoro study game — build a tiny clay room, one focus session at a time.">
+<meta name="theme-color" content="#c3c89d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Nooki">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./icon-180.png">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Nunito:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; font-family: "Nunito", sans-serif; }
+  a { color: #6c7150; } a:hover { color: #4f543a; }
+  button { font-family: "Fredoka", sans-serif; }
+  input { font-family: "Nunito", sans-serif; }
+  input::placeholder { color: #b9b394; }
+  @keyframes floaty { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-8px) rotate(2.5deg); } }
+  @keyframes bunbob { 0%,100% { transform: translateY(0) scale(1,1); } 50% { transform: translateY(-4px) scale(.98,1.03); } }
+  @keyframes bunhop { 0%,100% { transform: translateY(0) scale(1.08,.9); } 35% { transform: translateY(-15px) scale(.94,1.08); } 60% { transform: translateY(-2px) scale(1.02,.98); } }
+  @keyframes bunlean { 0%,100% { transform: rotate(-3deg) translateY(0); } 45% { transform: rotate(2deg) translateY(-2px); } 55% { transform: rotate(3deg) translateY(0); } }
+  @keyframes swing { 0%,100% { transform: rotate(-42deg); } 42% { transform: rotate(26deg); } 54% { transform: rotate(20deg); } }
+  @keyframes puff { 0% { transform: translate(0,0) scale(.35); opacity: .95; } 100% { transform: translate(var(--px), -22px) scale(1.5); opacity: 0; } }
+  @keyframes zfloat { 0% { transform: translate(0,0) scale(.7); opacity: 0; } 18% { opacity: .95; } 100% { transform: translate(12px,-36px) scale(1.2); opacity: 0; } }
+  @keyframes steam { 0% { transform: translateY(0) scale(.7); opacity: 0; } 25% { opacity: .85; } 100% { transform: translateY(-20px) scale(1.5); opacity: 0; } }
+  @keyframes twinkle { 0%,100% { transform: scale(.45) rotate(0deg); opacity: .25; } 50% { transform: scale(1.05) rotate(24deg); opacity: 1; } }
+  @keyframes cfburst { 0% { transform: translate(0,0) rotate(0deg); } 12% { opacity: 1; } 100% { transform: translate(var(--dx), var(--dy)) rotate(var(--rot)); opacity: 0; } }
+  @keyframes dropin { 0% { transform: translateZ(150px); } 62% { transform: translateZ(-7px); } 82% { transform: translateZ(3px); } 100% { transform: translateZ(0); } }
+  @keyframes ghostpulse { 0%,100% { opacity: .45; } 50% { opacity: 1; } }
+  @keyframes glowpulse { 0%,100% { opacity: .72; } 50% { opacity: 1; } }
+  @keyframes sway { 0%,100% { transform: rotate(-2.5deg); } 50% { transform: rotate(2.5deg); } }
+  @keyframes blink { 0%,91%,95.5%,100% { transform: scaleY(1); } 93% { transform: scaleY(.12); } }
+  @keyframes breathe { 0%,100% { transform: scale(1,1); } 50% { transform: scale(1.03,.97); } }
+  @keyframes sip { 0%,78%,100% { transform: rotate(0deg); } 84%,92% { transform: rotate(-5deg) translateY(-1px); } }
+  @keyframes cheerjump { 0%,100% { transform: translateY(0) scale(1.05,.94); } 40% { transform: translateY(-17px) scale(.96,1.06) rotate(-3deg); } 70% { transform: translateY(-4px) rotate(2deg); } }
+  @keyframes popin { 0% { transform: scale(.2); opacity: 0; } 60% { transform: scale(1.06); opacity: 1; } 80% { transform: scale(.97); } 100% { transform: scale(1); } }
+  @keyframes spinhand { 0% { transform: translateY(-100%) rotate(0deg); } 100% { transform: translateY(-100%) rotate(360deg); } }
+  @keyframes fadein { 0% { opacity: 0; } 100% { opacity: 1; } }
+  @keyframes eq { 0%,100% { transform: scaleY(.3); } 50% { transform: scaleY(1); } }
+  @media (max-width: 1100px) {
+    #colRoom { order: -1; }
+    #colTimer { order: 1; width: 100%; max-width: 480px; flex-basis: auto; }
+    #colSide { order: 2; width: 100%; max-width: 480px; flex-basis: auto; }
+  }
+  @media (max-width: 560px) {
+    #colTimer, #colSide { min-width: 0; }
+  }
+</style>
+</helmet>
+
+<div data-screen-label="App" style="min-height: 100vh; background: {{ bg }}; transition: background 1s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 14px 20px 22px; box-sizing: border-box;">
+
+  <!-- top bar: brand + account -->
+  <div style="width: 100%; max-width: 1360px; position: relative; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; box-sizing: border-box;">
+    <div style="display: flex; align-items: center; gap: 7px; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 21px; letter-spacing: 2px; color: rgba(90,85,50,.5);">
+      <span style="font-size: 15px; color: rgba(90,85,50,.42);">✦</span>nooki<span style="font-size: 15px; color: rgba(90,85,50,.42);">✦</span>
+    </div>
+    <button onClick="{{ openAccount }}" title="account" style="position: absolute; right: 0; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 6px; font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 12.5px; color: #6c7150; background: rgba(251,246,232,.85); border: 1.5px solid #e7dbbd; border-radius: 999px; padding: 6px 13px; cursor: pointer; box-shadow: 0 4px 12px rgba(120,105,60,.12);">{{ accountLabel }}</button>
+  </div>
+
+  <!-- ======================= GAME SCREEN ======================= -->
+  <sc-if value="{{ isGame }}" hint-placeholder-val="{{ true }}">
+    <div style="width: 100%; max-width: 1360px; display: flex; gap: 20px; align-items: flex-start; justify-content: center; flex-wrap: wrap;">
+
+      <!-- left: timer + music -->
+      <div id="colTimer" style="flex: 0 1 300px; min-width: 270px; display: flex; flex-direction: column; gap: 16px;">
+        <div style="background: #fbf6e8; border: 1.5px solid #e7dbbd; border-radius: 24px; padding: 20px 22px; box-shadow: 0 10px 26px rgba(120,105,60,.14);">
+          <div style="display: flex; gap: 7px; justify-content: center;">
+            <button onClick="{{ setClassic }}" style="font-weight: 500; font-size: 13px; border: none; cursor: pointer; border-radius: 999px; padding: 6px 15px; color: {{ classicChipInk }}; background: {{ classicChipBg }}; box-shadow: inset 0 1.5px 0 rgba(255,255,255,.4);">25 · 5 classic</button>
+            <button onClick="{{ setDeep }}" style="font-weight: 500; font-size: 13px; border: none; cursor: pointer; border-radius: 999px; padding: 6px 15px; color: {{ deepChipInk }}; background: {{ deepChipBg }}; box-shadow: inset 0 1.5px 0 rgba(255,255,255,.4);">50 · 10 deep</button>
+          </div>
+          <button onClick="{{ toggleAuto }}" style="margin-top: 9px; width: 100%; font-weight: 500; font-size: 12.5px; color: {{ autoInk }}; background: {{ autoBg }}; border: 2px solid #dfd3ae; border-radius: 999px; padding: 6px 10px; cursor: pointer;">{{ autoLabel }}</button>
+          <sc-if value="{{ autoOn }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top: 6px; text-align: center; font-size: 11px; color: #b3ae8b;">sessions flow non-stop · finished pieces queue up to name anytime</div>
+          </sc-if>
+          <div style="display: flex; justify-content: center; gap: 2px; margin: 14px 0 2px; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 64px; filter: drop-shadow(0 4px 0 rgba(140,135,100,.35)) drop-shadow(0 10px 18px rgba(120,105,60,.2)); animation: floaty 4.6s ease-in-out infinite;">
+            <sc-for list="{{ timerChars }}" as="c" hint-placeholder-count="5">
+              <span style="display: inline-block; width: {{ c.w }}; text-align: center; background: linear-gradient(180deg, {{ tL }} 10%, {{ tD }} 85%); -webkit-background-clip: text; background-clip: text; color: rgba(0,0,0,0);">{{ c.ch }}</span>
+            </sc-for>
+          </div>
+          <div style="text-align: center; font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 13px; color: #a49f7d; min-height: 18px;">{{ phaseLabel }}</div>
+          <div style="display: flex; flex-direction: column; gap: 9px; margin-top: 14px;">
+            <sc-if value="{{ showStart }}" hint-placeholder-val="{{ true }}">
+              <button onClick="{{ startFocus }}" style="font-weight: 600; font-size: 18px; color: #fffdf2; background: linear-gradient(160deg, {{ btnL }}, {{ btnD }}); border: none; border-radius: 999px; padding: 13px 20px; cursor: pointer; box-shadow: inset 0 2px 0 rgba(255,255,255,.45), inset 0 -4px 0 rgba(90,85,50,.22), 0 8px 18px rgba(120,105,60,.24); text-shadow: 0 1.5px 0 rgba(90,85,50,.28);">{{ startLabel }}</button>
+            </sc-if>
+            <sc-if value="{{ showPause }}" hint-placeholder-val="{{ false }}">
+              <div style="display: flex; gap: 8px;">
+                <button onClick="{{ togglePause }}" style="flex: 1; font-weight: 600; font-size: 15px; color: #6c7150; background: #fdfaf0; border: 2px solid #dfd3ae; border-radius: 999px; padding: 10px 12px; cursor: pointer; box-shadow: 0 4px 10px rgba(120,105,60,.12);">{{ pauseLabel }}</button>
+                <button onClick="{{ giveUp }}" style="flex: 1; font-weight: 500; font-size: 15px; color: #b3746a; background: #fdf3ef; border: 2px solid #ecd3ca; border-radius: 999px; padding: 10px 12px; cursor: pointer;">give up</button>
+              </div>
+            </sc-if>
+            <sc-if value="{{ paused }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align: center; font-size: 12.5px; color: #a49f7d;">paused, no penalty ♡ the build waits for you</div>
+            </sc-if>
+          </div>
+          <div style="margin-top: 13px; background: #f3ecd6; border-radius: 14px; padding: 10px 13px; display: flex; align-items: center; gap: 9px;">
+            <span style="font-size: 17px;">{{ targetIcon }}</span>
+            <div>
+              <div style="font-size: 11px; color: #a49f7d;">{{ targetKicker }}</div>
+              <div style="font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 13.5px; color: #6c7150;">{{ targetName }}</div>
+            </div>
+          </div>
+          <sc-if value="{{ demoOn }}" hint-placeholder-val="{{ true }}">
+            <div style="margin-top: 9px; text-align: center; font-size: 11px; color: #b3ae8b;">demo speed ×60 · 1 min = 1 s · turn off in tweaks</div>
+          </sc-if>
+        </div>
+
+        <!-- music · spotify -->
+        <div style="background: #fbf6e8; border: 1.5px solid #e7dbbd; border-radius: 24px; padding: 16px 18px; box-shadow: 0 10px 26px rgba(120,105,60,.12);">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 13.5px; color: {{ ink }};">♫ music · spotify</span>
+            <sc-if value="{{ spLinked }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ spUnlink }}" style="border: none; background: none; font-size: 11px; color: #7fa98b; cursor: pointer; text-decoration: underline;">unlink</button>
+            </sc-if>
+          </div>
+
+          <!-- CONNECT -->
+          <sc-if value="{{ spConnect }}" hint-placeholder-val="{{ true }}">
+            <button onClick="{{ spConnectClick }}" style="margin-top: 9px; width: 100%; font-weight: 500; font-size: 13.5px; color: #2e7d4f; background: #eaf5ec; border: 2px solid #cfe6d4; border-radius: 999px; padding: 10px 12px; cursor: pointer;">♫ connect spotify · play your own</button>
+            <div style="margin-top: 9px; font-size: 11.5px; line-height: 1.5; color: #a49f7d;">link your spotify premium to play any playlist right here — pick tracks, pause, and skip without leaving the room.</div>
+            <button onClick="{{ spOpenSetup }}" style="margin-top: 5px; border: none; background: none; font-size: 10.5px; color: #b3ae8b; cursor: pointer; text-decoration: underline;">spotify setup</button>
+          </sc-if>
+
+          <!-- SETUP -->
+          <sc-if value="{{ spSetup }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top: 9px; font-size: 11.5px; line-height: 1.55; color: #8a8668;">one-time setup: at <b>developer.spotify.com/dashboard</b> create an app, add the redirect URI below, then paste its Client ID.</div>
+            <div style="margin-top: 8px; font-size: 10px; color: #a49f7d;">redirect URI — add this to your spotify app:</div>
+            <div style="margin-top: 3px; font-size: 10.5px; color: #5c8a6b; background: #f3ecd6; border-radius: 8px; padding: 6px 8px; word-break: break-all;">{{ spRedirect }}</div>
+            <input value="{{ spClientInput }}" onInput="{{ spClientChange }}" placeholder="paste Client ID" style="margin-top: 8px; width: 100%; box-sizing: border-box; border: 1.5px solid #cfe6d4; border-radius: 10px; padding: 8px 10px; font-size: 12.5px; color: #6c7150; background: #fdfaf0; outline: none;">
+            <div style="display: flex; gap: 6px; margin-top: 7px;">
+              <button onClick="{{ spSaveClient }}" style="flex: 1; font-weight: 500; font-size: 12.5px; color: #fffdf2; background: #2e7d4f; border: none; border-radius: 999px; padding: 8px 10px; cursor: pointer;">save & connect</button>
+              <button onClick="{{ spCloseSetup }}" style="font-size: 12px; color: #8a8668; background: #fdfaf0; border: 1.5px solid #dfd3ae; border-radius: 999px; padding: 8px 12px; cursor: pointer;">cancel</button>
+            </div>
+          </sc-if>
+
+          <!-- PLAYER -->
+          <sc-if value="{{ spPlayer }}" hint-placeholder-val="{{ false }}">
+            <sc-if value="{{ spHasTrack }}" hint-placeholder-val="{{ true }}">
+              <div style="display: flex; align-items: center; gap: 10px; margin-top: 9px;">
+                <div style="width: 46px; height: 46px; border-radius: 10px; flex-shrink: 0; background-color: #ece3c8; background-image: {{ spArtUrl }}; background-size: cover; background-position: center; box-shadow: 0 3px 8px rgba(120,105,60,.2);"></div>
+                <div style="flex: 1; min-width: 0;">
+                  <div style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 13.5px; color: {{ ink }}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ spTrackName }}</div>
+                  <div style="font-size: 11px; color: #a49f7d; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ spArtist }}</div>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 10px;">
+                <button onClick="{{ spPrev }}" style="width: 34px; height: 34px; border-radius: 50%; border: 2px solid #dfd3ae; background: #fdfaf0; cursor: pointer; font-size: 13px; color: #8a8668;">‹‹</button>
+                <button onClick="{{ spToggle }}" style="width: 46px; height: 46px; border-radius: 50%; border: none; cursor: pointer; font-size: 17px; color: #fffdf2; background: linear-gradient(160deg, {{ btnL }}, {{ btnD }}); box-shadow: inset 0 2px 0 rgba(255,255,255,.4), 0 5px 12px rgba(120,105,60,.2);">{{ spPlayIcon }}</button>
+                <button onClick="{{ spNext }}" style="width: 34px; height: 34px; border-radius: 50%; border: 2px solid #dfd3ae; background: #fdfaf0; cursor: pointer; font-size: 13px; color: #8a8668;">››</button>
+              </div>
+            </sc-if>
+            <sc-if value="{{ spConnecting }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top: 10px; font-size: 12px; color: #8a8668; text-align: center;">{{ spStatus }}</div>
+            </sc-if>
+            <button onClick="{{ spToggleLists }}" style="margin-top: 10px; width: 100%; font-weight: 500; font-size: 12.5px; color: #6c7150; background: rgba(251,246,232,.7); border: 1.5px solid #e7dbbd; border-radius: 999px; padding: 7px 12px; cursor: pointer;">{{ spListsLabel }}</button>
+            <sc-if value="{{ spShowLists }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top: 7px; max-height: 178px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px;">
+                <sc-for list="{{ spPlaylists }}" as="pl" hint-placeholder-count="4">
+                  <button onClick="{{ pl.onPlay }}" title="{{ pl.name }}" style="display: flex; align-items: center; gap: 8px; text-align: left; background: {{ pl.bg }}; border: 1.5px solid #e7dbbd; border-radius: 10px; padding: 6px 8px; cursor: pointer;">
+                    <div style="width: 26px; height: 26px; border-radius: 6px; flex-shrink: 0; background-color: #ece3c8; background-image: {{ pl.imgUrl }}; background-size: cover; background-position: center;"></div>
+                    <span style="flex: 1; min-width: 0; font-size: 12px; color: #6c7150; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ pl.name }}</span>
+                    <span style="font-size: 10px; color: #b3ae8b;">{{ pl.count }}</span>
+                  </button>
+                </sc-for>
+              </div>
+            </sc-if>
+          </sc-if>
+
+          <sc-if value="{{ spError }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top: 8px; font-size: 11px; line-height: 1.45; color: #b3746a; background: #fdf3ef; border: 1.5px solid #ecd3ca; border-radius: 8px; padding: 6px 8px;">{{ spErrorMsg }}</div>
+          </sc-if>
+        </div>
+      </div>
+
+      <!-- center: room -->
+      <div id="colRoom" style="flex: 1 1 560px; min-width: min(480px, 100%); display: flex; flex-direction: column; align-items: center;">
+        <div style="display: flex; gap: 2px; margin-bottom: 2px; font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 40px; letter-spacing: 1px; filter: drop-shadow(0 3.5px 0 rgba(140,135,100,.35)) drop-shadow(0 10px 16px rgba(120,105,60,.18));">
+          <sc-for list="{{ titleLetters }}" as="l" hint-placeholder-count="12">
+            <span style="display: inline-block; min-width: {{ l.w }}; animation: floaty 3.2s ease-in-out {{ l.d }} infinite; background: linear-gradient(180deg, {{ tL }} 12%, {{ tD }} 84%); -webkit-background-clip: text; background-clip: text; color: rgba(0,0,0,0);">{{ l.ch }}</span>
+          </sc-for>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 13px; color: #fffdf2; background: rgba(90,85,50,.28); border-radius: 999px; padding: 5px 14px;">{{ roomType }} · {{ progressText }} built</span>
+          <span style="font-size: 12px; color: rgba(90,85,50,.55); font-weight: 700;">{{ flavor }}</span>
+        </div>
+        <div style="position: relative; margin-top: 6px;">
+          {{ roomEl }}
+          <sc-if value="{{ celebrating }}" hint-placeholder-val="{{ false }}">
+            <div style="position: absolute; inset: 0; pointer-events: none;">{{ confettiEl }}</div>
+          </sc-if>
+        </div>
+        <!-- companion picker -->
+        <div style="display: flex; gap: 12px; align-items: flex-end; justify-content: center; margin-top: -6px; background: rgba(255,253,242,.55); border-radius: 22px; padding: 9px 16px;">
+          <span style="font-size: 11.5px; color: rgba(90,85,50,.6); font-weight: 700; padding-bottom: 12px;">builder:</span>
+          <sc-for list="{{ compOptions }}" as="co" hint-placeholder-count="3">
+            <button onClick="{{ co.onPick }}" title="{{ co.note }}" style="display: flex; flex-direction: column; align-items: center; gap: 3px; border-radius: 16px; cursor: pointer; padding: 6px 14px 5px; border: 2px solid {{ co.edge }}; background: {{ co.bg }};">
+              <span style="display: block; position: relative; width: 26px; height: 30px; overflow: visible;">{{ co.el }}</span>
+              <span style="display: block; font-family: 'Fredoka', sans-serif; font-size: 11.5px; font-weight: 500; color: #6c7150; text-align: center;">{{ co.label }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- right: blueprint / wins -->
+      <div id="colSide" style="flex: 0 1 {{ sideBasis }}; min-width: {{ sideMin }}; display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; gap: 9px;">
+          <button onClick="{{ openHouses }}" style="flex: 1; font-weight: 500; font-size: 14px; color: #6c7150; background: #fbf6e8; border: 1.5px solid #e7dbbd; border-radius: 999px; padding: 10px 12px; cursor: pointer; box-shadow: 0 6px 14px rgba(120,105,60,.12);">⌂ switch house</button>
+          <button onClick="{{ openNotebook }}" style="flex: 1; font-weight: 500; font-size: 14px; color: #6c7150; background: #fbf6e8; border: 1.5px solid #e7dbbd; border-radius: 999px; padding: 10px 12px; cursor: pointer; box-shadow: 0 6px 14px rgba(120,105,60,.12);">✎ notebook</button>
+        </div>
+        <button onClick="{{ toggleBlueprint }}" style="font-weight: 500; font-size: 12.5px; color: #8a8668; background: rgba(251,246,232,.7); border: 1.5px solid #e7dbbd; border-radius: 999px; padding: 7px 12px; cursor: pointer;">{{ bpToggleLabel }}</button>
+        <sc-if value="{{ blueprintOpen }}" hint-placeholder-val="{{ true }}">
+        <div style="background: #fbf6e8; border: 1.5px solid #e7dbbd; border-radius: 24px; padding: 18px 16px 14px; box-shadow: 0 10px 26px rgba(120,105,60,.12);">
+          <div style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 15.5px; color: #6c7150; margin: 0 4px 10px;">blueprint · {{ progressText }}</div>
+          <div style="display: flex; flex-direction: column; gap: 6px; max-height: 460px; overflow-y: auto; padding: 0 2px;">
+            <sc-for list="{{ blueprint }}" as="b" hint-placeholder-count="16">
+              <div style="display: flex; gap: 9px; align-items: flex-start; background: {{ b.bg }}; border: 1.5px {{ b.borderStyle }} {{ b.edge }}; border-radius: 14px; padding: 8px 11px; animation: {{ b.anim }};">
+                <span style="font-size: 15px; filter: {{ b.iconFilter }};">{{ b.icon }}</span>
+                <div style="flex: 1; min-width: 0;">
+                  <div style="font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 13px; color: {{ b.nameColor }};">{{ b.name }}</div>
+                  <sc-if value="{{ b.hasWin }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size: 11.5px; line-height: 1.45; color: #8a8668;">“{{ b.win }}”</div>
+                    <div style="font-size: 10.5px; color: #b3ae8b; margin-top: 1px;">{{ b.date }}</div>
+                  </sc-if>
+                  <sc-if value="{{ b.isNext }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size: 11.5px; color: #b3ae8b;">next up · one session builds it</div>
+                  </sc-if>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ======================= HOUSE PICKER ======================= -->
+  <sc-if value="{{ isHouses }}" hint-placeholder-val="{{ false }}">
+    <div style="width: 100%; max-width: 1120px; animation: popin .45s cubic-bezier(.22,1.2,.36,1) both;">
+      <div style="display: flex; align-items: center; gap: 14px; margin: 6px 0 18px;">
+        <button onClick="{{ backToGame }}" style="font-weight: 500; font-size: 14px; color: #6c7150; background: #fbf6e8; border: 1.5px solid #e7dbbd; border-radius: 999px; padding: 9px 18px; cursor: pointer;">← back</button>
+        <div style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 26px; color: #fffdf2; text-shadow: 0 2px 0 rgba(90,85,50,.3);">pick a house to build in</div>
+      </div>
+      <div style="font-size: 13px; color: rgba(90,85,50,.65); font-weight: 700; margin: -8px 0 16px 4px;">progress is saved per house. wander freely, finish in any order.</div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 16px;">
+        <sc-for list="{{ houseCards }}" as="hc" hint-placeholder-count="6">
+          <div style="background: #fbf6e8; border: 2px solid {{ hc.edge }}; border-radius: 22px; padding: 16px 18px; box-shadow: 0 10px 24px rgba(120,105,60,.13);">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <div style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 17px; color: {{ hc.ink }};">{{ hc.emoji }} {{ hc.name }}</div>
+                <div style="font-size: 12px; color: #a49f7d;">{{ hc.room }} · {{ hc.prog }}</div>
+              </div>
+              <span style="font-family: 'Fredoka', sans-serif; font-size: 11.5px; font-weight: 500; color: #fffdf2; background: {{ hc.badgeBg }}; border-radius: 999px; padding: 4px 11px;">{{ hc.badge }}</span>
+            </div>
+            <div style="height: 172px; display: flex; justify-content: center; overflow: hidden; margin: 4px 0 2px;">{{ hc.mini }}</div>
+            <div style="display: flex; gap: 6px; align-items: center; margin: 6px 0 10px;">
+              <span style="flex: 1; height: 9px; border-radius: 6px; background: #efe7cf; overflow: hidden; display: block;"><span style="display: block; height: 100%; border-radius: 6px; width: {{ hc.pct }}; background: linear-gradient(90deg, {{ hc.barL }}, {{ hc.barD }});"></span></span>
+              <span style="font-size: 11px; color: #a49f7d; font-weight: 700;">{{ hc.prog }}</span>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button onClick="{{ hc.onPick }}" style="flex: 1; font-weight: 600; font-size: 14px; color: #fffdf2; background: linear-gradient(160deg, {{ hc.barL }}, {{ hc.barD }}); border: none; border-radius: 999px; padding: 9px 12px; cursor: pointer; box-shadow: inset 0 2px 0 rgba(255,255,255,.4), 0 5px 12px rgba(120,105,60,.18); text-shadow: 0 1px 0 rgba(90,85,50,.25);">{{ hc.btn }}</button>
+              <sc-if value="{{ hc.done }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ hc.onRebuild }}" style="font-weight: 500; font-size: 13px; color: #8a8668; background: #fdfaf0; border: 2px solid #dfd3ae; border-radius: 999px; padding: 8px 14px; cursor: pointer;">rebuild ↺</button>
+              </sc-if>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ======================= NOTEBOOK ======================= -->
+  <sc-if value="{{ isNotebook }}" hint-placeholder-val="{{ false }}">
+    <div style="width: 100%; max-width: 1120px; animation: popin .45s cubic-bezier(.22,1.2,.36,1) both;">
+      <div style="display: flex; align-items: center; gap: 14px; margin: 6px 0 18px;">
+        <button onClick="{{ backToGame }}" style="font-weight: 500; font-size: 14px; color: #6c7150; background: #fbf6e8; border: 1.5px solid #e7dbbd; border-radius: 999px; padding: 9px 18px; cursor: pointer;">← back</button>
+        <div style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 26px; color: #fffdf2; text-shadow: 0 2px 0 rgba(90,85,50,.3);">✎ your notebook of little houses</div>
+      </div>
+      <div style="background: #fbf6e8; border: 1.5px solid #e7dbbd; border-radius: 28px; padding: 26px 28px; box-shadow: 0 14px 34px rgba(120,105,60,.16);">
+        <div style="font-size: 13.5px; color: #8a8668; margin: 0 0 18px;">every finished house lives here, furniture by furniture, win by win. tap one to open its pages.</div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+          <sc-for list="{{ notebookCards }}" as="nc" hint-placeholder-count="6">
+            <button onClick="{{ nc.onOpen }}" style="text-align: left; background: {{ nc.bg }}; border: 2px solid {{ nc.edge }}; border-radius: 20px; padding: 14px 16px; cursor: pointer; position: relative; overflow: hidden;">
+              <sc-if value="{{ nc.done }}" hint-placeholder-val="{{ false }}">
+                <span style="position: absolute; top: 12px; right: 12px; font-family: 'Fredoka', sans-serif; font-size: 11px; font-weight: 600; color: #fffdf2; background: {{ nc.ink }}; border-radius: 999px; padding: 4px 11px;">complete ✦</span>
+              </sc-if>
+              <div style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 16px; color: {{ nc.ink }};">{{ nc.emoji }} {{ nc.name }}</div>
+              <div style="font-size: 11.5px; color: #a49f7d; margin-bottom: 4px;">{{ nc.room }} · {{ nc.sub }}</div>
+              <div style="height: 150px; display: flex; justify-content: center; overflow: hidden;">{{ nc.mini }}</div>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ======================= HOUSE PAGE (journal) ======================= -->
+  <sc-if value="{{ isHousePage }}" hint-placeholder-val="{{ false }}">
+    <div style="width: 100%; max-width: 1120px; animation: popin .5s cubic-bezier(.22,1.2,.36,1) both;">
+      <div style="display: flex; align-items: center; gap: 14px; margin: 6px 0 18px;">
+        <button onClick="{{ openNotebook }}" style="font-weight: 500; font-size: 14px; color: #6c7150; background: #fbf6e8; border: 1.5px solid #e7dbbd; border-radius: 999px; padding: 9px 18px; cursor: pointer;">← notebook</button>
+        <div style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 26px; color: #fffdf2; text-shadow: 0 2px 0 rgba(90,85,50,.3);">{{ pageTitle }}</div>
+        <span style="font-family: 'Fredoka', sans-serif; font-size: 12px; font-weight: 500; color: #fffdf2; background: rgba(90,85,50,.28); border-radius: 999px; padding: 5px 13px;">{{ pageSub }}</span>
+      </div>
+      <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start;">
+        <div style="flex: 1 1 460px; background: #fbf6e8; border: 1.5px solid #e7dbbd; border-radius: 28px; padding: 10px; box-shadow: 0 14px 34px rgba(120,105,60,.16); display: flex; justify-content: center; overflow: hidden;">{{ pageRoom }}</div>
+        <div style="flex: 1 1 400px; background: #fbf6e8; border: 1.5px solid #e7dbbd; border-radius: 28px; padding: 22px 20px; box-shadow: 0 14px 34px rgba(120,105,60,.16);">
+          <div style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 16px; color: #6c7150; margin: 0 2px 12px;">wins collected here</div>
+          <div style="display: flex; flex-direction: column; gap: 8px; max-height: 480px; overflow-y: auto;">
+            <sc-for list="{{ pageEntries }}" as="e" hint-placeholder-count="8">
+              <div style="display: flex; gap: 10px; background: #f6f0dd; border-radius: 14px; padding: 9px 12px;">
+                <span style="font-size: 16px;">{{ e.icon }}</span>
+                <div style="flex: 1;">
+                  <div style="font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 13.5px; color: #6c7150;">{{ e.name }}</div>
+                  <div style="font-size: 12px; line-height: 1.5; color: #8a8668;">“{{ e.win }}”</div>
+                  <div style="font-size: 10.5px; color: #b3ae8b; margin-top: 1px;">{{ e.date }} · {{ e.mins }} min focus</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+          <sc-if value="{{ pageHasArchive }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top: 14px; font-size: 12px; color: #a49f7d;">{{ pageArchiveNote }}</div>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ======================= OVERLAYS ======================= -->
+  <sc-if value="{{ showBreak }}" hint-placeholder-val="{{ false }}">
+    <div style="position: fixed; inset: 0; background: rgba(60,56,36,.45); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; animation: fadein .4s both; z-index: 40;">
+      <div style="background: #fbf6e8; border-radius: 28px; padding: 30px 40px; text-align: center; box-shadow: 0 24px 60px rgba(40,36,20,.35); animation: popin .5s cubic-bezier(.22,1.2,.36,1) both;">
+        <div style="display: flex; justify-content: center; transform: scale(1.35); transform-origin: 50% 100%; margin-bottom: 8px; height: 130px; align-items: flex-end;">{{ breakCompanion }}</div>
+        <div style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 21px; color: #6c7150;">{{ breakTitle }}</div>
+        <div style="font-size: 13px; color: #8a8668; margin: 4px 0 10px; max-width: 300px;">{{ breakSub }}</div>
+        <div style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 44px; color: {{ tD }};">{{ breakClock }}</div>
+        <button onClick="{{ skipBreak }}" style="margin-top: 12px; font-weight: 500; font-size: 14px; color: #6c7150; background: #fdfaf0; border: 2px solid #dfd3ae; border-radius: 999px; padding: 9px 26px; cursor: pointer;">skip break →</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ showNaming }}" hint-placeholder-val="{{ false }}">
+    <div style="position: fixed; inset: 0; background: rgba(60,56,36,.45); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; animation: fadein .4s both; z-index: 50;">
+      <div style="background: #fbf6e8; border-radius: 28px; padding: 30px 36px; width: 380px; text-align: center; box-shadow: 0 24px 60px rgba(40,36,20,.35); animation: popin .5s cubic-bezier(.22,1.2,.36,1) both;">
+        <div style="height: 120px; display: flex; align-items: center; justify-content: center; overflow: visible;">{{ namingStage }}</div>
+        <div style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 20px; color: #6c7150; margin-top: 6px;">✦ the {{ namingName }} is built! ✦</div>
+        <div style="font-size: 13px; color: #8a8668; margin: 5px 0 12px;">name this win: what did you get done just now?</div>
+        <input value="{{ namingText }}" onChange="{{ onNameInput }}" placeholder="e.g. read 40 pages of orgo" style="width: 100%; box-sizing: border-box; border: 2px dashed #dfd3ae; border-radius: 13px; padding: 11px 14px; font-size: 14px; color: #6f6b4e; background: #fdfaf0; outline: none; text-align: center;">
+        <button onClick="{{ saveNaming }}" style="margin-top: 13px; width: 100%; font-weight: 600; font-size: 16px; color: #fffdf2; background: linear-gradient(160deg, {{ btnL }}, {{ btnD }}); border: none; border-radius: 999px; padding: 11px 20px; cursor: pointer; box-shadow: inset 0 2px 0 rgba(255,255,255,.45), inset 0 -3px 0 rgba(90,85,50,.22), 0 6px 14px rgba(120,105,60,.2); text-shadow: 0 1px 0 rgba(90,85,50,.25);">keep it ♡</button>
+        <div style="font-size: 11px; color: #b3ae8b; margin-top: 8px;">{{ todayLabel }} · saved to this furniture forever</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ showQuit }}" hint-placeholder-val="{{ false }}">
+    <div style="position: fixed; inset: 0; background: rgba(60,56,36,.45); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; animation: fadein .3s both; z-index: 50;">
+      <div style="background: #fbf6e8; border-radius: 26px; padding: 28px 32px; width: 360px; text-align: center; box-shadow: 0 24px 60px rgba(40,36,20,.35); animation: popin .4s cubic-bezier(.22,1.2,.36,1) both;">
+        <div style="font-size: 30px;">🥺</div>
+        <div style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 19px; color: #6c7150; margin-top: 4px;">leave this session?</div>
+        <div style="font-size: 13.5px; line-height: 1.55; color: #8a8668; margin: 8px 0 16px;">the {{ targetName }} won't be finished. building it will need a fresh {{ focusMins }} minutes. (pausing is always free!)</div>
+        <div style="display: flex; gap: 9px;">
+          <button onClick="{{ cancelQuit }}" style="flex: 1; font-weight: 600; font-size: 14px; color: #fffdf2; background: linear-gradient(160deg, {{ btnL }}, {{ btnD }}); border: none; border-radius: 999px; padding: 10px 12px; cursor: pointer; box-shadow: inset 0 2px 0 rgba(255,255,255,.4);">keep building</button>
+          <button onClick="{{ confirmQuit }}" style="flex: 1; font-weight: 500; font-size: 14px; color: #b3746a; background: #fdf3ef; border: 2px solid #ecd3ca; border-radius: 999px; padding: 10px 12px; cursor: pointer;">leave anyway</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ showComplete }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ shelveHouse }}" style="position: fixed; inset: 0; background: rgba(60,56,36,.5); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; animation: fadein .4s both; z-index: 60; cursor: pointer;">
+      <div style="position: absolute; inset: 0; pointer-events: none;">{{ bigConfetti }}</div>
+      <div style="text-align: center; animation: popin .6s cubic-bezier(.22,1.2,.36,1) both;">
+        <div style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 44px; color: #fffdf2; text-shadow: 0 3px 0 rgba(90,85,50,.35), 0 14px 30px rgba(40,36,20,.4);">✦ {{ completeName }} is complete! ✦</div>
+        <div style="font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 18px; color: rgba(255,253,242,.92); margin-top: 10px;">16 pieces · 16 named wins · one very proud {{ compName }}</div>
+        <div style="font-size: 14px; color: rgba(255,253,242,.75); margin-top: 22px; animation: glowpulse 2s ease-in-out infinite;">tap anywhere to shelve it in your notebook ✎</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ showPill }}" hint-placeholder-val="{{ false }}">
+    <button onClick="{{ openPending }}" style="position: fixed; right: 18px; bottom: 18px; z-index: 45; display: flex; align-items: center; gap: 10px; background: #fbf6e8; border: 2px solid #e3c987; border-radius: 999px; padding: 10px 18px 10px 14px; cursor: pointer; box-shadow: 0 12px 28px rgba(60,50,20,.28); animation: popin .5s cubic-bezier(.22,1.2,.36,1) both;">
+      <span style="font-size: 18px;">✦</span>
+      <span style="text-align: left;">
+        <span style="display: block; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 13.5px; color: #6c7150;">the {{ pillName }} is built!</span>
+        <span style="display: block; font-size: 11.5px; color: #a49f7d;">tap to name your win{{ pillMore }}</span>
+      </span>
+    </button>
+  </sc-if>
+
+  <sc-if value="{{ showRebuild }}" hint-placeholder-val="{{ false }}">
+    <div style="position: fixed; inset: 0; background: rgba(60,56,36,.45); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; animation: fadein .3s both; z-index: 50;">
+      <div style="background: #fbf6e8; border-radius: 26px; padding: 28px 32px; width: 370px; text-align: center; box-shadow: 0 24px 60px rgba(40,36,20,.35); animation: popin .4s cubic-bezier(.22,1.2,.36,1) both;">
+        <div style="font-size: 30px;">↺</div>
+        <div style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 19px; color: #6c7150; margin-top: 4px;">rebuild {{ rebuildName }}?</div>
+        <div style="font-size: 13.5px; line-height: 1.55; color: #8a8668; margin: 8px 0 16px;">the room empties back to blueprints for a fresh run. every win you journaled stays safe in your notebook.</div>
+        <div style="display: flex; gap: 9px;">
+          <button onClick="{{ confirmRebuild }}" style="flex: 1; font-weight: 600; font-size: 14px; color: #fffdf2; background: linear-gradient(160deg, {{ btnL }}, {{ btnD }}); border: none; border-radius: 999px; padding: 10px 12px; cursor: pointer; box-shadow: inset 0 2px 0 rgba(255,255,255,.4);">yes, fresh build</button>
+          <button onClick="{{ cancelRebuild }}" style="flex: 1; font-weight: 500; font-size: 14px; color: #8a8668; background: #fdfaf0; border: 2px solid #dfd3ae; border-radius: 999px; padding: 10px 12px; cursor: pointer;">not yet</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- account overlay -->
+  <sc-if value="{{ showAccount }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeAccount }}" style="position: fixed; inset: 0; background: rgba(60,56,36,.45); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; animation: fadein .3s both; z-index: 60; padding: 16px;">
+      <div style="background: #fbf6e8; border-radius: 24px; padding: 24px 26px; width: 360px; max-width: 100%; box-shadow: 0 24px 60px rgba(40,36,20,.35); animation: popin .4s cubic-bezier(.22,1.2,.36,1) both; box-sizing: border-box;">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <div style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 17px; color: #6c7150;">account</div>
+          <button onClick="{{ closeAccount }}" style="border: none; background: none; font-size: 16px; color: #b3ae8b; cursor: pointer;">✕</button>
+        </div>
+
+        <!-- SIGNED IN -->
+        <sc-if value="{{ acctSignedIn }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top: 12px; font-size: 13.5px; color: #6c7150;">signed in as <b>{{ acctName }}</b> ♡</div>
+          <div style="margin-top: 6px; font-size: 12px; line-height: 1.5; color: #8a8668;">your rooms and every named win are saved privately to this account — they follow you to any device.</div>
+          <button onClick="{{ acctSignOut }}" style="margin-top: 14px; width: 100%; font-weight: 500; font-size: 13.5px; color: #b3746a; background: #fdf3ef; border: 2px solid #ecd3ca; border-radius: 999px; padding: 9px 12px; cursor: pointer;">sign out</button>
+        </sc-if>
+
+        <!-- SIGN IN (configured) -->
+        <sc-if value="{{ acctCanSignIn }}" hint-placeholder-val="{{ true }}">
+          <div style="margin-top: 12px; font-size: 12.5px; line-height: 1.55; color: #8a8668;">sign in to save your progress and wins to your own private account, on any device.</div>
+          <button onClick="{{ acctSignIn }}" style="margin-top: 12px; width: 100%; font-weight: 600; font-size: 14px; color: #6c7150; background: #fff; border: 1.5px solid #dfd3ae; border-radius: 999px; padding: 10px 12px; cursor: pointer; box-shadow: 0 4px 10px rgba(120,105,60,.12);">continue with Google</button>
+          <div style="margin-top: 9px; font-size: 10.5px; line-height: 1.5; color: #a49f7d;">we only use your Google sign-in to keep your save private — no password is ever seen by nooki, and nothing is sold or shared. see the <a href="./privacy.html" target="_blank" rel="noopener">privacy policy</a> &amp; <a href="./terms.html" target="_blank" rel="noopener">terms</a>.</div>
+        </sc-if>
+
+        <!-- SETUP (no config) -->
+        <sc-if value="{{ acctSetup }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top: 12px; font-size: 12px; line-height: 1.55; color: #8a8668;">accounts are optional. to enable Google sign-in + cloud save, paste your Firebase web config (Project settings → your web app). data stays private per account via security rules — see the README.</div>
+          <textarea value="{{ acctCfgInput }}" onInput="{{ acctCfgChange }}" placeholder='{ "apiKey": "…", "authDomain": "…", "projectId": "…", "appId": "…" }' style="margin-top: 9px; width: 100%; height: 92px; box-sizing: border-box; border: 1.5px solid #dfd3ae; border-radius: 10px; padding: 8px 10px; font-size: 11px; font-family: monospace; color: #6c7150; background: #fdfaf0; outline: none; resize: vertical;"></textarea>
+          <button onClick="{{ acctSaveCfg }}" style="margin-top: 8px; width: 100%; font-weight: 500; font-size: 13px; color: #fffdf2; background: linear-gradient(160deg, {{ btnL }}, {{ btnD }}); border: none; border-radius: 999px; padding: 9px 12px; cursor: pointer;">save config</button>
+          <div style="margin-top: 8px; font-size: 10.5px; color: #a49f7d;">without this, nooki still works and saves locally in this browser.</div>
+        </sc-if>
+
+        <sc-if value="{{ acctError }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top: 8px; font-size: 11px; color: #b3746a; background: #fdf3ef; border: 1.5px solid #ecd3ca; border-radius: 8px; padding: 6px 8px;">{{ acctErrorMsg }}</div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- footer -->
+  <div style="margin-top: 18px; font-size: 11px; color: rgba(90,85,50,.45); display: flex; gap: 13px; align-items: center; flex-wrap: wrap; justify-content: center;">
+    <a href="./privacy.html" style="color: rgba(90,85,50,.55);">privacy</a>
+    <a href="./terms.html" style="color: rgba(90,85,50,.55);">terms</a>
+    <span>· made with ♡ for focused study</span>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;demoSpeed&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Demo&quot; },
+  &quot;sceneScale&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 1, &quot;min&quot;: 0.7, &quot;max&quot;: 1.35, &quot;step&quot;: 0.05, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Demo&quot; }
+}">
+const SAVE_KEY = 'cozypomo.v1';
+const MODES = {
+  classic: { focus: 25, brk: 5, long: 15, every: 4 },
+  deep: { focus: 50, brk: 10, long: 15, every: 3 }
+};
+const TRACKS = {
+  matcha: ['steeping slowly', 'moss on the sill', 'two sugars please'],
+  strawberry: ['flour dust waltz', 'jam session', 'oven light'],
+  lavender: ['moth & moon', 'quilt fort', 'half past dream'],
+  honey: ['crema', 'window seat', 'sunday pour'],
+  seaside: ['low tide letters', 'salt & sand', 'gull mail'],
+  cocoa: ['ember hum', 'pine needle rain', 'kettle over fire']
+};
+// Optional: hard-code your Spotify app Client ID here to skip in-app setup.
+// Otherwise players paste it once (saved to localStorage) via the music card.
+const SPOTIFY_CLIENT_ID_DEFAULT = '';
+function spotifyClientId() { try { return localStorage.getItem('nooki.spotify.clientId') || SPOTIFY_CLIENT_ID_DEFAULT; } catch (e) { return SPOTIFY_CLIENT_ID_DEFAULT; } }
+function spotifyRedirectUri() { return location.origin + location.pathname; }
+// Optional accounts: paste your Firebase config JSON (Project settings → Web app).
+// Client keys here are public identifiers; per-user data is protected by
+// Firestore security rules (see README). Empty = game saves locally only.
+const FIREBASE_CONFIG_DEFAULT = null;
+function firebaseConfig() { try { return JSON.parse(localStorage.getItem('nooki.firebase') || 'null') || FIREBASE_CONFIG_DEFAULT; } catch (e) { return FIREBASE_CONFIG_DEFAULT; } }
+
+class Component extends DCLogic {
+  state = {
+    ready: false, screen: 'game', houseId: 'matcha', viewHouse: 'matcha',
+    phase: 'idle', running: false, leftS: 0, focusCount: 0,
+    modal: null, namingText: '', namingFor: null, justBuilt: null, celebrating: false, completeId: null,
+    companion: 'bunny', spSetupOpen: false, spShowLists: false, spClientInput: '', spTick: 0,
+    auto: false, blueprintOpen: true, houses: null
+  };
+
+  // ---------- lifecycle ----------
+  async componentDidMount() {
+    try {
+      const clayMod = await import('./assets/clay.js');
+      const setsMod = await import('./assets/sets.js');
+      const sets2Mod = await import('./assets/sets2.js');
+      this.clayMod = clayMod;
+      this.clay = clayMod.makeClay(React);
+      const s1 = setsMod.makeSets(React, this.clay);
+      const s2 = sets2Mod.makeSets2(React, this.clay);
+      this.setsById = { living: null, kitchen: s1.kitchen, bedroom: s1.bedroom, cafe: s2.cafe, beach: s2.beach, forest: s2.forest };
+      this.load();
+      try { const audioMod = await import('./assets/audio.js'); this.audio = audioMod.makeAudio(); } catch (e) { this.audio = null; }
+      try { this._spotifyMod = await import('./assets/spotify.js'); this.initSpotify(); await this.spotify.handleRedirect(); if (this.spotify.isLinked()) { this.spotify.start(); this.loadPlaylists(); } } catch (e) { this.spotify = null; }
+      try { this._cloudMod = await import('./assets/cloud.js'); this.cloud = this._cloudMod.makeCloud({ config: firebaseConfig(), onChange: () => this.onCloudChange() }); if (this.cloud.enabled()) this.cloud.init(); } catch (e) { this.cloud = null; }
+      this._shownDone = {};
+      clayMod.THEMES.forEach((t) => { if (this.state.houses[t.id] && this.state.houses[t.id].built.length >= this.furnOf(t.id).length) this._shownDone[t.id] = true; });
+      this._last = Date.now();
+      this._int = setInterval(() => this.tick(), 300);
+      this._onResize = () => this.setState({ vw: window.innerWidth });
+      window.addEventListener('resize', this._onResize);
+      this.setState({ ready: true, vw: window.innerWidth });
+    } catch (e) { console.error('prototype failed to load art library', e); }
+  }
+  componentWillUnmount() { if (this._int) clearInterval(this._int); if (this._onResize) window.removeEventListener('resize', this._onResize); }
+
+  // ---------- audio (UI sound effects) ----------
+  sfx(n) { try { if (this.audio) this.audio.sfx(n); } catch (e) {} }
+
+  // ---------- spotify ----------
+  initSpotify() {
+    if (!this._spotifyMod) return;
+    this.spotify = this._spotifyMod.makeSpotify({
+      clientId: spotifyClientId(), redirectUri: spotifyRedirectUri(),
+      onChange: () => { if (this.spotify && this.spotify.ready() && !this._plLoaded) this.loadPlaylists(); this.setState({ spTick: (this.state.spTick || 0) + 1 }); }
+    });
+  }
+  loadPlaylists() {
+    if (!this.spotify || this._plLoading) return;
+    this._plLoading = true;
+    this.spotify.getPlaylists().then((pls) => { this._playlists = pls; this._plLoaded = true; this._plLoading = false; this.setState({ spTick: (this.state.spTick || 0) + 1 }); }).catch(() => { this._plLoading = false; });
+  }
+  spErrText(code) {
+    if (!code) return '';
+    if (/premium/.test(code)) return 'spotify premium is required to play music in the browser.';
+    if (code === 'no-client-id') return 'add your spotify Client ID in setup first.';
+    if (code === 'sdk-load-failed') return 'could not load the spotify player. check your connection.';
+    if (/auth/.test(code)) return 'spotify sign-in expired — please reconnect.';
+    return 'spotify hiccup: ' + code;
+  }
+
+  // ---------- save / load / seed ----------
+  seed() {
+    const day = 86400000, now = Date.now();
+    const mk = (key, title, daysAgo, mins) => ({ key, title, date: new Date(now - daysAgo * day).toISOString(), mins: mins || 25 });
+    const kitchenWins = [
+      'outlined my thesis intro', 'read 30 pages of bio', 'flashcards: all of ch. 5', 'wrote the lab abstract',
+      'practice test, 82%!', 'cleaned my citations', 'french vocab, 60 words', 'problem set q1 to q8',
+      'rewrote the messy proof', 'emailed prof (finally)', 'annotated two papers', 'built the study guide',
+      'stats homework done', 'memorized krebs cycle', 'drafted the conclusion', 'reviewed a whole semester of notes'
+    ];
+    const bedroomWins = [
+      'planned the week ahead', 'read 40 pages of orgo', 'wrote 500 words', 'debugged the assignment',
+      'chem problem set done', 'made lecture summaries', 'group project slides', 'practiced presentation twice',
+      'inbox zero, for once', 'linear algebra drills', 'essay outline v2', 'read the assigned novel chunk',
+      'lab report figures', 'quizzed myself on dates', 'polished the bibliography', 'one full past paper'
+    ];
+    const kFurn = this.setsById.kitchen.FURN, bFurn = this.setsById.bedroom.FURN, mFurn = this.clay.FURN;
+    const matchaWins = ['set up my study plan', 'calc review, 2 chapters', 'wrote the intro paragraph', 'vocab flashcards round 1', 'finished the reading list'];
+    return {
+      houses: {
+        matcha: { built: mFurn.slice(0, 5).map((f, i) => mk(f.key, matchaWins[i], 5 - i)), archives: [] },
+        strawberry: { built: kFurn.map((f, i) => mk(f.key, kitchenWins[i], 40 - i * 2)), archives: [] },
+        lavender: { built: bFurn.map((f, i) => mk(f.key, bedroomWins[i], 74 - i * 3)), archives: [] },
+        honey: { built: [], archives: [] }, seaside: { built: [], archives: [] }, cocoa: { built: [], archives: [] }
+      },
+      houseId: 'matcha', companion: 'bunny'
+    };
+  }
+  load() {
+    let d = null;
+    try { d = JSON.parse(localStorage.getItem(SAVE_KEY)); } catch (e) { d = null; }
+    if (!d || !d.houses) d = this.seed();
+    this.state.houses = d.houses;
+    this.state.houseId = d.houseId || 'matcha';
+    this.state.viewHouse = this.state.houseId;
+    this.state.companion = d.companion || 'bunny';
+    this.state.auto = !!d.auto;
+  }
+  savePayload() { return { houses: this.state.houses, houseId: this.state.houseId, companion: this.state.companion, auto: this.state.auto }; }
+  saveLocal() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(this.savePayload())); } catch (e) {} }
+  save() { this.saveLocal(); if (this.cloud && this._cloudUser) this.cloud.save(this.savePayload()); }
+
+  // ---------- account sync ----------
+  async onCloudChange() {
+    const u = this.cloud && this.cloud.currentUser();
+    if (u && this._cloudUser !== u.uid) {
+      // just signed in — this account's cloud save wins; if empty, seed it with local
+      this._cloudUser = u.uid;
+      const remote = await this.cloud.load();
+      if (remote && remote.houses) {
+        this.state.houses = remote.houses;
+        this.state.houseId = remote.houseId || this.state.houseId; this.state.viewHouse = this.state.houseId;
+        this.state.companion = remote.companion || this.state.companion; this.state.auto = !!remote.auto;
+        this.saveLocal();
+      } else { this.cloud.save(this.savePayload()); }
+      this._shownDone = {};
+      this.clayMod.THEMES.forEach((t) => { if (this.state.houses[t.id] && this.state.houses[t.id].built.length >= this.furnOf(t.id).length) this._shownDone[t.id] = true; });
+    } else if (!u && this._cloudUser) {
+      // signed out — go back to this browser's local save
+      this._cloudUser = null; this.load();
+    }
+    this.setState({ spTick: (this.state.spTick || 0) + 1 });
+  }
+  accountErrText(code) {
+    if (!code) return '';
+    if (code === 'unauthorized-domain') return 'add this site to your firebase Authorized domains, then try again.';
+    if (code === 'not-configured' || code === 'load-failed') return 'add your firebase config in setup first.';
+    return 'sign-in hiccup: ' + code;
+  }
+  derivePending() {
+    const out = [];
+    this.clayMod.THEMES.forEach((t) => {
+      const H = this.state.houses[t.id]; if (!H) return;
+      H.built.forEach((b) => {
+        if (!b.title) { const f = this.furnOf(t.id).filter((x) => x.key === b.key)[0]; out.push({ houseId: t.id, key: b.key, label: f ? f.label : b.key }); }
+      });
+    });
+    return out;
+  }
+
+  // ---------- helpers ----------
+  themeOf(id) { return this.clayMod.THEMES.filter((t) => t.id === id)[0]; }
+  furnOf(id) { const t = this.themeOf(id); const s = this.setsById[t.set]; return s ? s.FURN : this.clay.FURN; }
+  setOf(id) { const t = this.themeOf(id); return this.setsById[t.set] || undefined; }
+  houseData(id) { return this.state.houses[id]; }
+  builtKeys(id) { return this.houseData(id).built.map((b) => b.key); }
+  nextFurn(id) { const bk = this.builtKeys(id); return this.furnOf(id).filter((f) => bk.indexOf(f.key) < 0)[0] || null; }
+  completedCount() { const H = this.state.houses; let n = 0; for (const id in H) { if (H[id].built.length >= this.furnOf(id).length) n++; n += (H[id].archives || []).length; } return n; }
+  demoMult() { return (this.props.demoSpeed != null ? this.props.demoSpeed : true) ? 60 : 1; }
+  mode() { return MODES[this.state.mode || 'classic']; }
+  fmt(s) { s = Math.max(0, Math.ceil(s)); const m = Math.floor(s / 60); const ss = s % 60; return (m < 10 ? '0' : '') + m + ':' + (ss < 10 ? '0' : '') + ss; }
+
+  // ---------- timer ----------
+  tick() {
+    const now = Date.now(); const dt = (now - this._last) / 1000; this._last = now;
+    if (!this.state.running || (this.state.modal && !this.state.auto)) return;
+    const ph = this.state.phase;
+    if (ph !== 'focus' && ph !== 'break' && ph !== 'longbreak') return;
+    const left = this.state.leftS - dt * this.demoMult();
+    if (left <= 0) { ph === 'focus' ? this.focusDone() : this.breakDone(); return; }
+    if (Math.ceil(left) !== Math.ceil(this.state.leftS)) this.setState({ leftS: left });
+    else this.state.leftS = left;
+  }
+  startFocus() {
+    const nf = this.nextFurn(this.state.houseId);
+    if (!nf) { this.setState({ screen: 'houses' }); return; }
+    this.setState({ phase: 'focus', running: true, leftS: this.mode().focus * 60, target: nf.key });
+    this._last = Date.now();
+  }
+  focusDone() {
+    const id = this.state.houseId; const nf = this.nextFurn(id); if (!nf) return;
+    const entry = { key: nf.key, title: '', date: new Date().toISOString(), mins: this.mode().focus };
+    this.state.houses[id].built.push(entry); this.save();
+    const cnt = this.state.focusCount + 1;
+    this.setState({ running: false, phase: 'idle', leftS: 0, celebrating: true, justBuilt: nf.key, focusCount: cnt });
+    this.sfx('complete');
+    this._conf = this.clay.confetti('cf' + Date.now(), { n: 34, spread: 200 });
+    const complete = this.state.houses[id].built.length >= this.furnOf(id).length;
+    if (this.state.auto) {
+      if (complete) {
+        this._shownDone[id] = true;
+        this._bigConf = this.clay.confetti('big' + Date.now(), { n: 60, spread: 420, stagger: .6 });
+        setTimeout(() => this.setState({ modal: 'complete', completeId: id, celebrating: false, justBuilt: null }), 1200);
+      } else {
+        const M = this.mode(); const isLong = cnt % M.every === 0;
+        setTimeout(() => {
+          if (this.state.phase !== 'idle') return;
+          this._last = Date.now();
+          this.sfx('break');
+          this.setState({ phase: isLong ? 'longbreak' : 'break', running: true, leftS: (isLong ? M.long : M.brk) * 60, celebrating: false, justBuilt: null });
+        }, 1400);
+      }
+    } else {
+      this._justFocused = true;
+      setTimeout(() => this.setState({ modal: 'naming', namingFor: { houseId: id, key: nf.key }, namingText: '', celebrating: false }), 1300);
+    }
+  }
+  saveNaming() {
+    const S = this.state; const nFor = S.namingFor;
+    if (!nFor) { this.setState({ modal: null }); return; }
+    const H = this.state.houses[nFor.houseId];
+    const entry = H.built.filter((b) => b.key === nFor.key && !b.title)[0] || H.built.filter((b) => b.key === nFor.key)[0];
+    if (entry) entry.title = (S.namingText || 'a quiet win').trim();
+    this.save();
+    this.sfx('name');
+    const pending = this.derivePending();
+    if (pending.length) { this.setState({ namingFor: pending[0], namingText: '' }); return; }
+    const hid = nFor.houseId;
+    const complete = H.built.length >= this.furnOf(hid).length;
+    if (complete && !this._shownDone[hid]) {
+      this._shownDone[hid] = true;
+      this._bigConf = this.clay.confetti('big' + Date.now(), { n: 60, spread: 420, stagger: .6 });
+      this.setState({ modal: 'complete', completeId: hid, celebrating: false, justBuilt: null });
+      return;
+    }
+    if (!S.auto && this._justFocused) {
+      this._justFocused = false;
+      const cnt = S.focusCount; const M = this.mode();
+      const isLong = cnt > 0 && cnt % M.every === 0;
+      this._last = Date.now();
+      this.sfx('break');
+      this.setState({ modal: null, namingFor: null, celebrating: false, justBuilt: null, phase: isLong ? 'longbreak' : 'break', running: true, leftS: (isLong ? M.long : M.brk) * 60 });
+      return;
+    }
+    this.setState({ modal: null, namingFor: null, celebrating: false, justBuilt: null });
+  }
+  breakDone() {
+    if (this.state.auto && this.state.screen === 'game' && this.nextFurn(this.state.houseId) && this.state.modal !== 'quit') { this.startFocus(); return; }
+    this.setState({ phase: 'idle', running: false, leftS: 0 });
+  }
+
+  // ---------- renderVals ----------
+  renderVals() {
+    const S = this.state;
+    if (!S.ready || !S.houses) {
+      return { isGame: true, bg: '#c3c89d', tL: '#e5e9cf', tD: '#9ba37a', ink: '#6c7150', btnL: '#b8bd97', btnD: '#a2a781', timerChars: [], titleLetters: [], phaseLabel: 'waking the bear…', showStart: false, demoOn: false, spConnect: true, accountLabel: 'sign in', openAccount: () => {}, showAccount: false };
+    }
+    const clay = this.clay; const h = React.createElement;
+    const id = S.houseId; const T = this.themeOf(id); const FURN = this.furnOf(id); const set = this.setOf(id);
+    const built = this.houseData(id).built; const bk = built.map((b) => b.key);
+    const nf = this.nextFurn(id);
+    const M = this.mode();
+    const inFocus = S.phase === 'focus';
+    const onBreak = S.phase === 'break' || S.phase === 'longbreak';
+    const demoOn = this.demoMult() > 1;
+    const fmtDate = (iso) => { const d = new Date(iso); return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toLowerCase(); };
+
+    // timer text
+    const clock = S.phase === 'idle' ? this.fmt(M.focus * 60) : this.fmt(S.leftS);
+    const timerChars = clock.split('').map((ch) => ({ ch, w: ch === ':' ? '20px' : '38px' }));
+    const titleLetters = T.name.toLowerCase().split('').map((ch, i) => ({ ch: ch === ' ' ? '' : ch, w: ch === ' ' ? '13px' : '0', d: (i * .16).toFixed(2) + 's' }));
+
+    // bunny state
+    let bun = { x: 210, y: 212, pose: 'idle', kind: S.companion, show: true };
+    if (inFocus && nf) bun = { x: nf.bx, y: nf.by, pose: S.running ? 'build' : 'idle', kind: S.companion, show: true };
+    if (S.celebrating && nf) bun = { x: nf.bx, y: nf.by, pose: 'cheer', kind: S.companion, show: true };
+    if (onBreak) bun.show = false;
+
+    const bpOpen = S.blueprintOpen;
+    const baseW = bpOpen ? 620 : 760, baseH = bpOpen ? 520 : 600;
+    const vw = S.vw || (typeof window !== 'undefined' ? window.innerWidth : 1200);
+    // shrink the whole scene to fit narrow / mobile widths (columns stack < 1101px)
+    const fit = vw >= 1101 ? 1 : Math.min(1, (vw - 28) / baseW);
+    const roomEl = clay.room({
+      theme: T, set, built: bk,
+      targetKey: (inFocus || S.celebrating) && S.target ? S.target : (nf ? nf.key : null),
+      justBuilt: S.justBuilt, bunny: bun,
+      scale: (this.props.sceneScale || 1) * (bpOpen ? .98 : 1.16) * fit,
+      w: Math.round(baseW * fit), h: Math.round(baseH * fit), lift: bpOpen ? 44 : 34
+    });
+
+    // blueprint list
+    const blueprint = FURN.map((f) => {
+      const entry = built.filter((b) => b.key === f.key)[0];
+      const isNext = nf && nf.key === f.key;
+      return {
+        icon: f.icon, name: f.label,
+        bg: entry ? '#f6f0dd' : (isNext ? '#f3ecd6' : 'rgba(246,240,221,.4)'),
+        edge: isNext ? '#cfc49b' : '#e7dbbd',
+        borderStyle: entry ? 'solid' : 'dashed',
+        iconFilter: entry ? 'none' : 'grayscale(1) opacity(.45)',
+        nameColor: entry ? '#6c7150' : '#a49f7d',
+        hasWin: !!entry, win: entry ? (entry.title || '…') : '', date: entry ? fmtDate(entry.date) : '',
+        isNext, anim: isNext && inFocus ? 'ghostpulse 1.8s ease-in-out infinite' : 'none'
+      };
+    });
+
+    // companions
+    const unlocked = this.completedCount();
+    const compOptions = this.clayMod.COMPANIONS.map((c) => {
+      const locked = unlocked < c.unlock;
+      return {
+        label: locked ? '🔒 ' + c.name : c.name,
+        note: locked ? 'finish ' + c.unlock + (c.unlock === 1 ? ' house' : ' houses') + ' to unlock' : c.name + ' the ' + c.species,
+        el: h('div', { style: { position: 'absolute', left: '50%', bottom: '0', width: '64px', height: '92px', marginLeft: '-32px', transform: 'scale(.3)', transformOrigin: '50% 100%', filter: locked ? 'grayscale(1) opacity(.5)' : 'none' } }, clay.companion({ kind: c.species, pose: 'idle' })),
+        edge: S.companion === c.species ? '#cfc49b' : 'rgba(0,0,0,0)',
+        bg: S.companion === c.species ? '#fdfaf0' : 'rgba(253,250,240,.4)',
+        onPick: () => { if (!locked) { this.setState({ companion: c.species }); this.state.companion = c.species; this.save(); } }
+      };
+    });
+
+    // music · spotify
+    const sp = this.spotify;
+    const spLinked = !!(sp && sp.isLinked());
+    const spReady = !!(sp && sp.ready());
+    const spErr = sp ? sp.error() : null;
+    const spTrack = sp ? sp.currentTrack() : null;
+    const spCss = (u) => u ? ('url("' + u.replace(/"/g, '') + '")') : 'none';
+    const spPlaylists = (this._playlists || []).map((p) => ({
+      name: p.name, count: p.count ? (p.count + '') : '', imgUrl: spCss(p.img),
+      bg: '#fbf6e8', onPlay: () => { this.sfx('tap'); if (sp) sp.playContext(p.uri); }
+    }));
+
+    // account · cloud save
+    const cl = this.cloud;
+    const acctUser = cl ? cl.currentUser() : null;
+    const acctEnabled = !!(cl && cl.enabled());
+    const acctErr = cl ? cl.error() : null;
+
+    // screens: house cards + notebook
+    const mkMini = (hid, opts) => clay.room(Object.assign({
+      theme: this.themeOf(hid), set: this.setOf(hid), built: this.builtKeys(hid),
+      bunny: { show: false }, scale: .42, w: 300, h: 190, lift: 46
+    }, opts || {}));
+    const emojiOf = { matcha: '🍵', strawberry: '🍓', lavender: '🌙', honey: '🍯', seaside: '🌊', cocoa: '🍂' };
+
+    let houseCards = [], notebookCards = [];
+    if (S.screen === 'houses') {
+      houseCards = this.clayMod.THEMES.map((t) => {
+        const n = this.builtKeys(t.id).length, tot = this.furnOf(t.id).length, done = n >= tot;
+        return {
+          name: t.name, room: t.room, ink: t.ink, emoji: emojiOf[t.id],
+          edge: t.id === id ? t.clay : '#e7dbbd',
+          prog: n + ' / ' + tot, pct: Math.round(n / tot * 100) + '%',
+          barL: t.clayL, barD: t.clay, done,
+          badge: done ? 'complete ✦' : (n === 0 ? 'untouched' : (t.id === id ? 'building here' : 'in progress')),
+          badgeBg: done ? t.gold : (t.id === id ? t.clay : '#c9c4a4'),
+          btn: t.id === id ? 'keep building' : (n === 0 ? 'start this house' : 'continue here'),
+          mini: mkMini(t.id),
+          onPick: () => { this.sfx('tap'); this.setState({ houseId: t.id, screen: 'game', phase: 'idle', running: false, leftS: 0 }); this.state.houseId = t.id; this.save(); },
+          onRebuild: () => this.setState({ modal: 'rebuild', rebuildId: t.id })
+        };
+      });
+    }
+    if (S.screen === 'notebook') {
+      notebookCards = this.clayMod.THEMES.map((t) => {
+        const H = this.houseData(t.id); const n = H.built.length, tot = this.furnOf(t.id).length, done = n >= tot;
+        const rebuilds = (H.archives || []).length;
+        return {
+          name: t.name, room: t.room, ink: t.ink, emoji: emojiOf[t.id], done,
+          bg: done ? '#fdfaf0' : 'rgba(253,250,240,.55)', edge: done ? t.gold : '#e7dbbd',
+          sub: done ? '16 wins' + (rebuilds ? ' · rebuilt ×' + rebuilds : '') : (n === 0 ? 'not started' : n + ' / ' + tot + ' so far'),
+          mini: mkMini(t.id),
+          onOpen: () => this.setState({ screen: 'housePage', viewHouse: t.id })
+        };
+      });
+    }
+
+    // house page
+    let pageVals = {};
+    if (S.screen === 'housePage') {
+      const vid = S.viewHouse; const vt = this.themeOf(vid); const vH = this.houseData(vid);
+      const vFurn = this.furnOf(vid);
+      const iconOf = (k) => (vFurn.filter((f) => f.key === k)[0] || {}).icon || '✦';
+      const nameOf = (k) => (vFurn.filter((f) => f.key === k)[0] || {}).label || k;
+      pageVals = {
+        pageTitle: vt.name.toLowerCase(), pageSub: vt.room + ' · ' + vH.built.length + ' / ' + vFurn.length,
+        pageRoom: clay.room({ theme: vt, set: this.setOf(vid), built: vH.built.map((b) => b.key), bunny: { show: false }, scale: .8, w: 520, h: 440, lift: 44 }),
+        pageEntries: vH.built.map((b) => ({ icon: iconOf(b.key), name: nameOf(b.key), win: b.title || '…', date: fmtDate(b.date), mins: b.mins })),
+        pageHasArchive: (vH.archives || []).length > 0,
+        pageArchiveNote: '↺ rebuilt ' + (vH.archives || []).length + ' time(s) before. ' + ((vH.archives || []).reduce((a, arr) => a + arr.length, 0)) + ' older wins are archived with this house.'
+      };
+    }
+
+    const rebuildTheme = S.rebuildId ? this.themeOf(S.rebuildId) : null;
+
+    // pending wins queue (auto mode) + naming target
+    const pending = this.derivePending();
+    const nFor = S.namingFor;
+    const nTheme = nFor ? this.themeOf(nFor.houseId) : T;
+    const nDef = nFor ? this.furnOf(nFor.houseId).filter((x) => x.key === nFor.key)[0] : null;
+
+    return Object.assign({
+      // theme + chrome
+      bg: T.bg, tL: T.clayL, tD: this.clay.sh(T.clay, -.12), ink: T.ink, btnL: T.clayL, btnD: T.clay,
+      isGame: S.screen === 'game', isHouses: S.screen === 'houses', isNotebook: S.screen === 'notebook', isHousePage: S.screen === 'housePage',
+      roomType: T.room.toLowerCase(), flavor: T.flavor, progressText: bk.length + ' / ' + FURN.length,
+      titleLetters, timerChars,
+      phaseLabel: S.phase === 'idle' ? (nf ? 'ready when you are' : 'this house is complete ✦') : (inFocus ? (S.running ? 'focus · building the ' + (nf ? nf.label.toLowerCase() : '') : 'paused') : 'break time'),
+      // timer controls
+      showStart: S.phase === 'idle' && !!nf, startLabel: bk.length === 0 ? 'start the first session ♡' : 'start focus ♡',
+      showPause: inFocus, pauseLabel: S.running ? 'pause' : 'resume', paused: inFocus && !S.running,
+      startFocus: () => { if (this.audio) this.audio.resume(); this.sfx('start'); this.startFocus(); },
+      togglePause: () => { this._last = Date.now(); this.sfx('tap'); this.setState({ running: !S.running }); },
+      giveUp: () => { this.sfx('tap'); this.setState({ modal: 'quit', running: false }); },
+      confirmQuit: () => this.setState({ modal: null, phase: 'idle', running: false, leftS: 0 }),
+      cancelQuit: () => { this._last = Date.now(); this.setState({ modal: null, running: true }); },
+      setClassic: () => { if (S.phase === 'idle') { this.setState({ mode: 'classic' }); } },
+      setDeep: () => { if (S.phase === 'idle') { this.setState({ mode: 'deep' }); } },
+      classicChipBg: (S.mode || 'classic') === 'classic' ? T.clay : '#ece3c8', classicChipInk: (S.mode || 'classic') === 'classic' ? '#fffdf2' : '#8a8668',
+      deepChipBg: S.mode === 'deep' ? T.clay : '#ece3c8', deepChipInk: S.mode === 'deep' ? '#fffdf2' : '#8a8668',
+      focusMins: M.focus, demoOn,
+      // auto continue + blueprint toggle + pending pill
+      toggleAuto: () => { this.state.auto = !this.state.auto; this.save(); this.setState({ auto: this.state.auto }); },
+      autoOn: S.auto, autoLabel: S.auto ? 'auto continue · on ✦' : 'auto continue · off',
+      autoBg: S.auto ? '#f3ecd6' : '#fdfaf0', autoInk: S.auto ? '#6c7150' : '#a49f7d',
+      toggleBlueprint: () => { this.sfx('tap'); this.setState({ blueprintOpen: !S.blueprintOpen }); },
+      blueprintOpen: S.blueprintOpen,
+      bpToggleLabel: S.blueprintOpen ? '☰ hide blueprint · see more room' : '☰ show blueprint · ' + bk.length + ' / ' + FURN.length,
+      sideBasis: '300px', sideMin: S.blueprintOpen ? '270px' : '0px',
+      showPill: pending.length > 0 && !S.modal && S.screen === 'game',
+      pillName: pending.length ? pending[0].label : '',
+      pillMore: pending.length > 1 ? ' · ' + (pending.length - 1) + ' more waiting' : '',
+      openPending: () => this.setState({ modal: 'naming', namingFor: pending[0], namingText: '' }),
+      targetIcon: nf ? nf.icon : '✦', targetKicker: inFocus ? 'building now' : 'next reward', targetName: nf ? nf.label : 'all 16 built!',
+      // music · spotify
+      spLinked,
+      spConnect: !spLinked && !S.spSetupOpen,
+      spSetup: S.spSetupOpen,
+      spPlayer: spLinked && !S.spSetupOpen,
+      spHasTrack: !!spTrack,
+      spConnecting: spLinked && !spTrack && !spErr,
+      spStatus: spReady ? 'press play or pick a playlist ♫' : 'waking the spotify player…',
+      spTrackName: spTrack ? spTrack.name : '',
+      spArtist: spTrack ? spTrack.artist : '',
+      spArtUrl: spCss(spTrack ? spTrack.img : ''),
+      spPlayIcon: (spTrack && !spTrack.paused) ? '❚❚' : '▶',
+      spConnectClick: () => { if (!this.spotify) return; if (this.spotify.hasClientId()) this.spotify.login(); else this.setState({ spSetupOpen: true }); },
+      spOpenSetup: () => this.setState({ spSetupOpen: true, spClientInput: spotifyClientId() }),
+      spCloseSetup: () => this.setState({ spSetupOpen: false }),
+      spClientInput: S.spClientInput,
+      spClientChange: (e) => this.setState({ spClientInput: e.target.value }),
+      spRedirect: spotifyRedirectUri(),
+      spSaveClient: () => { const v = (S.spClientInput || '').trim(); try { localStorage.setItem('nooki.spotify.clientId', v); } catch (e) {} this.setState({ spSetupOpen: false }); this.initSpotify(); if (v) this.spotify.login(); },
+      spUnlink: () => { if (this.spotify) this.spotify.logout(); this._playlists = null; this._plLoaded = false; this.setState({ spShowLists: false }); },
+      spToggle: () => { this.sfx('tap'); if (this.spotify) this.spotify.toggle(); },
+      spNext: () => { this.sfx('tap'); if (this.spotify) this.spotify.next(); },
+      spPrev: () => { this.sfx('tap'); if (this.spotify) this.spotify.prev(); },
+      spShowLists: S.spShowLists,
+      spListsLabel: S.spShowLists ? '▲ hide playlists' : '☰ your playlists',
+      spToggleLists: () => { this.sfx('tap'); if (!this._plLoaded) this.loadPlaylists(); this.setState({ spShowLists: !S.spShowLists }); },
+      spPlaylists,
+      spError: !!spErr, spErrorMsg: this.spErrText(spErr),
+      // room + companion
+      roomEl, celebrating: S.celebrating, confettiEl: this._conf, compOptions,
+      // blueprint
+      blueprint,
+      // nav
+      openHouses: () => { this.sfx('tap'); this.setState({ screen: 'houses' }); },
+      openNotebook: () => { this.sfx('tap'); this.setState({ screen: 'notebook' }); },
+      backToGame: () => this.setState({ screen: 'game' }),
+      // overlays
+      showBreak: onBreak, breakClock: this.fmt(S.leftS),
+      breakTitle: S.phase === 'longbreak' ? 'long break, you earned it' : (S.focusCount % 2 ? 'tea break ♡' : 'nap break ♡'),
+      breakSub: S.auto ? 'stretch and sip. the next session starts all by itself ✦' : 'building is paused. stretch, sip, wander back when ready.',
+      breakCompanion: clay.companion({ kind: S.companion, pose: S.focusCount % 2 ? 'tea' : 'nap' }),
+      skipBreak: () => { this.sfx('tap'); this.breakDone(); },
+      showNaming: S.modal === 'naming',
+      namingName: nDef ? nDef.label : 'new piece',
+      namingStage: nDef ? clay.itemStage(nFor.key, nTheme, { set: this.setOf(nFor.houseId), scale: .62, w: 300, h: 120 }) : null,
+      namingText: S.namingText,
+      onNameInput: (e) => this.setState({ namingText: e.target.value }),
+      saveNaming: () => this.saveNaming(),
+      todayLabel: new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' }).toLowerCase(),
+      showQuit: S.modal === 'quit',
+      showComplete: S.modal === 'complete', completeName: this.themeOf(S.completeId || id).name.toLowerCase(), compName: (this.clayMod.COMPANIONS.filter((c) => c.species === S.companion)[0] || {}).name,
+      bigConfetti: this._bigConf,
+      shelveHouse: () => this.setState({ modal: null, screen: 'housePage', viewHouse: S.completeId || id, justBuilt: null }),
+      showRebuild: S.modal === 'rebuild', rebuildName: rebuildTheme ? rebuildTheme.name.toLowerCase() : '',
+      confirmRebuild: () => {
+        const rid = S.rebuildId; const H = this.state.houses[rid];
+        H.archives = (H.archives || []).concat([H.built]); H.built = [];
+        this.save(); this.setState({ modal: null, houseId: rid, screen: 'game', phase: 'idle', running: false, leftS: 0 });
+      },
+      cancelRebuild: () => this.setState({ modal: null }),
+      // account · cloud save
+      accountLabel: acctUser ? ('● ' + acctUser.name) : 'sign in',
+      openAccount: () => { this.sfx('tap'); this.setState({ modal: 'account', acctCfgInput: '' }); },
+      closeAccount: () => this.setState({ modal: null }),
+      showAccount: S.modal === 'account',
+      acctSignedIn: !!acctUser,
+      acctName: acctUser ? acctUser.name : '',
+      acctCanSignIn: acctEnabled && !acctUser,
+      acctSetup: !acctEnabled,
+      acctSignIn: () => { if (this.cloud) this.cloud.signIn(); },
+      acctSignOut: () => { if (this.cloud) this.cloud.signOut(); this.setState({ modal: null }); },
+      acctCfgInput: S.acctCfgInput || '',
+      acctCfgChange: (e) => this.setState({ acctCfgInput: e.target.value }),
+      acctSaveCfg: () => {
+        let cfg = null; try { cfg = JSON.parse(S.acctCfgInput || ''); } catch (e) {}
+        if (!cfg || !cfg.apiKey || !cfg.projectId) { this.setState({ spTick: (S.spTick || 0) + 1, _acctCfgErr: 1 }); alert('That doesn’t look like a valid Firebase config (needs apiKey, projectId, appId).'); return; }
+        try { localStorage.setItem('nooki.firebase', JSON.stringify(cfg)); } catch (e) {}
+        this.cloud = this._cloudMod.makeCloud({ config: cfg, onChange: () => this.onCloudChange() });
+        this.cloud.init();
+        this.setState({ modal: null });
+      },
+      acctError: !!acctErr, acctErrorMsg: this.accountErrText(acctErr),
+      // house cards
+      houseCards, notebookCards
+    }, pageVals);
+  }
+}
+
+</script>
+</body>
+</html>

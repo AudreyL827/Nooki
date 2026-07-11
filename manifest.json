@@ -1,0 +1,17 @@
+{
+  "name": "Nooki",
+  "short_name": "Nooki",
+  "description": "A cozy pomodoro study game — build a tiny clay room, one focus session at a time.",
+  "start_url": ".",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#c3c89d",
+  "theme_color": "#c3c89d",
+  "icons": [
+    { "src": "icon-180.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icon.svg", "type": "image/svg+xml", "sizes": "any" }
+  ]
+}

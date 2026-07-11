@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Nooki — Asset Sheet</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Nunito:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #f2ecdc; font-family: "Nunito", sans-serif; }
+  a { color: #6c7150; } a:hover { color: #4f543a; }
+  @keyframes floaty { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-9px) rotate(2.5deg); } }
+  @keyframes bunbob { 0%,100% { transform: translateY(0) scale(1,1); } 50% { transform: translateY(-4px) scale(.98,1.03); } }
+  @keyframes bunhop { 0%,100% { transform: translateY(0) scale(1.08,.9); } 35% { transform: translateY(-15px) scale(.94,1.08); } 60% { transform: translateY(-2px) scale(1.02,.98); } }
+  @keyframes bunlean { 0%,100% { transform: rotate(-3deg) translateY(0); } 45% { transform: rotate(2deg) translateY(-2px); } 55% { transform: rotate(3deg) translateY(0); } }
+  @keyframes swing { 0%,100% { transform: rotate(-42deg); } 42% { transform: rotate(26deg); } 54% { transform: rotate(20deg); } }
+  @keyframes puff { 0% { transform: translate(0,0) scale(.35); opacity: .95; } 100% { transform: translate(var(--px), -22px) scale(1.5); opacity: 0; } }
+  @keyframes zfloat { 0% { transform: translate(0,0) scale(.7); opacity: 0; } 18% { opacity: .95; } 100% { transform: translate(12px,-36px) scale(1.2); opacity: 0; } }
+  @keyframes steam { 0% { transform: translateY(0) scale(.7); opacity: 0; } 25% { opacity: .85; } 100% { transform: translateY(-20px) scale(1.5); opacity: 0; } }
+  @keyframes twinkle { 0%,100% { transform: scale(.45) rotate(0deg); opacity: .25; } 50% { transform: scale(1.05) rotate(24deg); opacity: 1; } }
+  @keyframes cfburst { 0% { transform: translate(0,0) rotate(0deg); } 12% { opacity: 1; } 100% { transform: translate(var(--dx), var(--dy)) rotate(var(--rot)); opacity: 0; } }
+  @keyframes dropin { 0% { transform: translateZ(150px); } 62% { transform: translateZ(-7px); } 82% { transform: translateZ(3px); } 100% { transform: translateZ(0); } }
+  @keyframes ghostpulse { 0%,100% { opacity: .45; } 50% { opacity: 1; } }
+  @keyframes glowpulse { 0%,100% { opacity: .72; } 50% { opacity: 1; } }
+  @keyframes sway { 0%,100% { transform: rotate(-2.5deg); } 50% { transform: rotate(2.5deg); } }
+  @keyframes blink { 0%,91%,95.5%,100% { transform: scaleY(1); } 93% { transform: scaleY(.12); } }
+  @keyframes breathe { 0%,100% { transform: scale(1,1); } 50% { transform: scale(1.03,.97); } }
+  @keyframes sip { 0%,78%,100% { transform: rotate(0deg); } 84%,92% { transform: rotate(-5deg) translateY(-1px); } }
+  @keyframes cheerjump { 0%,100% { transform: translateY(0) scale(1.05,.94); } 40% { transform: translateY(-17px) scale(.96,1.06) rotate(-3deg); } 70% { transform: translateY(-4px) rotate(2deg); } }
+  @keyframes popin { 0% { transform: scale(0) rotate(-6deg); } 60% { transform: scale(1.12); } 80% { transform: scale(.96); } 100% { transform: scale(1); } }
+  @keyframes spinhand { 0% { transform: translateY(-100%) rotate(0deg); } 100% { transform: translateY(-100%) rotate(360deg); } }
+</style>
+</helmet>
+
+<div style="max-width: 1560px; margin: 0 auto; padding: 56px 48px 90px;">
+
+  <!-- ============ HEADER ============ -->
+  <header data-screen-label="Header" style="display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 26px;">
+    <div style="display: flex; gap: 4px; font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 82px; letter-spacing: 2px; filter: drop-shadow(0 5px 0 rgba(158,162,128,.42)) drop-shadow(0 16px 24px rgba(125,115,75,.2));">
+      <span style="display: inline-block; animation: floaty 3.2s ease-in-out 0s infinite; background: linear-gradient(180deg, #e5e9cf 12%, #b6bc94 82%); -webkit-background-clip: text; background-clip: text; color: rgba(0,0,0,0);">n</span>
+      <span style="display: inline-block; animation: floaty 3.2s ease-in-out .2s infinite; background: linear-gradient(180deg, #e5e9cf 12%, #b6bc94 82%); -webkit-background-clip: text; background-clip: text; color: rgba(0,0,0,0);">o</span>
+      <span style="display: inline-block; animation: floaty 3.2s ease-in-out .4s infinite; background: linear-gradient(180deg, #e5e9cf 12%, #b6bc94 82%); -webkit-background-clip: text; background-clip: text; color: rgba(0,0,0,0);">o</span>
+      <span style="display: inline-block; animation: floaty 3.2s ease-in-out .6s infinite; background: linear-gradient(180deg, #e5e9cf 12%, #b6bc94 82%); -webkit-background-clip: text; background-clip: text; color: rgba(0,0,0,0);">k</span>
+      <span style="display: inline-block; animation: floaty 3.2s ease-in-out .8s infinite; background: linear-gradient(180deg, #e5e9cf 12%, #b6bc94 82%); -webkit-background-clip: text; background-clip: text; color: rgba(0,0,0,0);">i</span>
+    </div>
+    <div style="font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 15px; letter-spacing: 3px; text-transform: uppercase; color: #a49f7d;">animation &amp; art asset sheet · for three.js build</div>
+    <p style="max-width: 640px; text-align: center; margin: 4px 0 0; font-size: 14.5px; line-height: 1.6; color: #85815f;">Soft air-dry-clay art direction: matte rounded volumes, pastel hues, warm whites, one hue family per house. Every element below is a spec for the real-time three.js version, with names, loops and timings included.</p>
+  </header>
+
+  <!-- ============ TYPE ============ -->
+  <section data-screen-label="Type" style="background: #fbf6e8; border: 1.5px solid #e7dbbd; border-radius: 28px; padding: 34px 38px; margin-bottom: 28px; box-shadow: 0 10px 30px rgba(140,120,70,.08);">
+    <div style="font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 12.5px; letter-spacing: 2.5px; text-transform: uppercase; color: #a49f7d; margin-bottom: 4px;">01 · type</div>
+    <h2 style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 26px; color: #6c7150; margin: 0 0 18px;">Floating marshmallow type</h2>
+    <div style="display: flex; flex-wrap: wrap; gap: 26px; align-items: stretch;">
+      <div style="flex: 1 1 380px; background: #f3ecd6; border-radius: 20px; padding: 24px 28px;">
+        <div style="font-size: 12px; color: #8a8668; margin-bottom: 10px;">Display: <b>Fredoka 500</b>, air-dry-clay letters. Each floats on its own 3.2s loop (stagger 0.2s), keyframe <code style="font-family: ui-monospace, monospace; font-size: 11px; background: #efe7cf; padding: 2px 6px; border-radius: 6px;">floaty</code></div>
+        <div style="display: flex; gap: 2px; font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 48px; filter: drop-shadow(0 3.5px 0 rgba(158,162,128,.4)) drop-shadow(0 10px 16px rgba(125,115,75,.18));">
+          <span style="display: inline-block; animation: floaty 3.2s ease-in-out 0s infinite; background: linear-gradient(180deg, #e5e9cf 12%, #b6bc94 82%); -webkit-background-clip: text; background-clip: text; color: rgba(0,0,0,0);">f</span>
+          <span style="display: inline-block; animation: floaty 3.2s ease-in-out .2s infinite; background: linear-gradient(180deg, #e5e9cf 12%, #b6bc94 82%); -webkit-background-clip: text; background-clip: text; color: rgba(0,0,0,0);">o</span>
+          <span style="display: inline-block; animation: floaty 3.2s ease-in-out .4s infinite; background: linear-gradient(180deg, #e5e9cf 12%, #b6bc94 82%); -webkit-background-clip: text; background-clip: text; color: rgba(0,0,0,0);">c</span>
+          <span style="display: inline-block; animation: floaty 3.2s ease-in-out .6s infinite; background: linear-gradient(180deg, #e5e9cf 12%, #b6bc94 82%); -webkit-background-clip: text; background-clip: text; color: rgba(0,0,0,0);">u</span>
+          <span style="display: inline-block; animation: floaty 3.2s ease-in-out .8s infinite; background: linear-gradient(180deg, #e5e9cf 12%, #b6bc94 82%); -webkit-background-clip: text; background-clip: text; color: rgba(0,0,0,0);">s</span>
+          <span style="display: inline-block; width: 14px;"></span>
+          <span style="display: inline-block; animation: floaty 3.2s ease-in-out 1s infinite; background: linear-gradient(180deg, #f0d5db 12%, #d59cab 82%); -webkit-background-clip: text; background-clip: text; color: rgba(0,0,0,0);">t</span>
+          <span style="display: inline-block; animation: floaty 3.2s ease-in-out 1.2s infinite; background: linear-gradient(180deg, #f0d5db 12%, #d59cab 82%); -webkit-background-clip: text; background-clip: text; color: rgba(0,0,0,0);">i</span>
+          <span style="display: inline-block; animation: floaty 3.2s ease-in-out 1.4s infinite; background: linear-gradient(180deg, #f0d5db 12%, #d59cab 82%); -webkit-background-clip: text; background-clip: text; color: rgba(0,0,0,0);">m</span>
+          <span style="display: inline-block; animation: floaty 3.2s ease-in-out 1.6s infinite; background: linear-gradient(180deg, #f0d5db 12%, #d59cab 82%); -webkit-background-clip: text; background-clip: text; color: rgba(0,0,0,0);">e</span>
+          <span style="display: inline-block; animation: floaty 3.2s ease-in-out 1.8s infinite; background: linear-gradient(180deg, #f0d5db 12%, #d59cab 82%); -webkit-background-clip: text; background-clip: text; color: rgba(0,0,0,0);">!</span>
+        </div>
+        <div style="margin-top: 16px; font-size: 12px; color: #8a8668;">Body: <b>Nunito</b> for journal entries, checklists and UI copy. Never below 12.5px.</div>
+        <p style="margin: 6px 0 0; font-size: 14.5px; line-height: 1.6; color: #6f6b4e;">Named the wins, sipped the tea, built the little sofa, one pomodoro at a time.</p>
+      </div>
+      <div style="flex: 1 1 480px; background: #f3ecd6; border-radius: 20px; padding: 24px 28px;">
+        <div style="font-size: 12px; color: #8a8668; margin-bottom: 10px;">Timer digits: Fredoka 600 in fixed-width digit slots. The whole group bobs while counting, and the <b>color follows the active house palette:</b></div>
+        <div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: baseline;">
+          <div style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 74px; background: linear-gradient(180deg, #ccd2a9 10%, #9ba37a 85%); -webkit-background-clip: text; background-clip: text; color: rgba(0,0,0,0); filter: drop-shadow(0 4px 0 rgba(158,162,128,.42)) drop-shadow(0 12px 20px rgba(125,115,75,.2)); animation: floaty 4.6s ease-in-out infinite; display: inline-block;">25:00</div>
+          <div style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 46px; background: linear-gradient(180deg, #eec3ce 10%, #cd8ba0 85%); -webkit-background-clip: text; background-clip: text; color: rgba(0,0,0,0); filter: drop-shadow(0 3px 0 rgba(190,130,150,.4)) drop-shadow(0 9px 16px rgba(150,80,80,.18)); animation: floaty 4.6s ease-in-out .5s infinite; display: inline-block;">50:00</div>
+          <div style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 46px; background: linear-gradient(180deg, #c9c3e7 10%, #918ac0 85%); -webkit-background-clip: text; background-clip: text; color: rgba(0,0,0,0); filter: drop-shadow(0 3px 0 rgba(140,132,180,.4)) drop-shadow(0 9px 16px rgba(90,80,140,.18)); animation: floaty 4.6s ease-in-out 1s infinite; display: inline-block;">04:59</div>
+        </div>
+        <div style="display: flex; gap: 8px; margin-top: 14px; align-items: center;">
+          <span style="font-size: 12px; color: #8a8668;">ink per theme:</span>
+          <span style="width: 22px; height: 22px; border-radius: 50%; background: #6c7150; display: inline-block;"></span>
+          <span style="width: 22px; height: 22px; border-radius: 50%; background: #a25c6d; display: inline-block;"></span>
+          <span style="width: 22px; height: 22px; border-radius: 50%; background: #6b64a3; display: inline-block;"></span>
+          <span style="width: 22px; height: 22px; border-radius: 50%; background: #93702f; display: inline-block;"></span>
+          <span style="width: 22px; height: 22px; border-radius: 50%; background: #4f7987; display: inline-block;"></span>
+          <span style="width: 22px; height: 22px; border-radius: 50%; background: #6e4b33; display: inline-block;"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ COMPANIONS ============ -->
+  <section data-screen-label="Companions" style="background: #fbf6e8; border: 1.5px solid #e7dbbd; border-radius: 28px; padding: 34px 38px; margin-bottom: 28px; box-shadow: 0 10px 30px rgba(140,120,70,.08);">
+    <div style="font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 12.5px; letter-spacing: 2.5px; text-transform: uppercase; color: #a49f7d; margin-bottom: 4px;">02 · companions</div>
+    <h2 style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 26px; color: #6c7150; margin: 0 0 6px;">Blob builders</h2>
+    <p style="margin: 0 0 20px; font-size: 14px; color: #85815f; max-width: 720px;">One chibi blob body, three skins. New companions unlock by finishing whole houses. Use the tweaks panel to preview a different companion in every pose and room below.</p>
+    <div style="display: flex; flex-wrap: wrap; gap: 22px;">
+      <sc-for list="{{ compCards }}" as="c" hint-placeholder-count="3">
+        <div style="flex: 0 0 232px; background: #f3ecd6; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+          <div style="height: 128px; display: flex; align-items: flex-end; justify-content: center;">{{ c.el }}</div>
+          <div style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 17px; color: #6c7150;">{{ c.name }} <span style="font-weight: 400; color: #a49f7d;">· {{ c.species }}</span></div>
+          <div style="font-size: 12px; color: #8a8668; background: #efe7cf; border-radius: 999px; padding: 4px 12px;">{{ c.unlockNote }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- ============ POSES ============ -->
+  <section data-screen-label="Pose library" style="background: #fbf6e8; border: 1.5px solid #e7dbbd; border-radius: 28px; padding: 34px 38px; margin-bottom: 28px; box-shadow: 0 10px 30px rgba(140,120,70,.08);">
+    <div style="font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 12.5px; letter-spacing: 2.5px; text-transform: uppercase; color: #a49f7d; margin-bottom: 4px;">03 · pose &amp; animation library</div>
+    <h2 style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 26px; color: #6c7150; margin: 0 0 20px;">Six loops cover the whole game</h2>
+    <div style="display: flex; flex-wrap: wrap; gap: 22px;">
+      <sc-for list="{{ poseCards }}" as="p" hint-placeholder-count="6">
+        <div style="flex: 0 0 224px; background: #f3ecd6; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+          <div style="height: 132px; display: flex; align-items: flex-end; justify-content: center;">{{ p.el }}</div>
+          <div style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 16px; color: #6c7150;">{{ p.name }}</div>
+          <div style="font-family: ui-monospace, monospace; font-size: 11px; background: #efe7cf; padding: 2px 8px; border-radius: 6px; color: #6f6b4e;">{{ p.kf }}</div>
+          <div style="font-size: 12.5px; line-height: 1.5; color: #8a8668; text-align: center;">{{ p.note }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- ============ ROOM STATES ============ -->
+  <section data-screen-label="Room states" style="background: #b6bc8a; border: 1.5px solid #a5ab79; border-radius: 28px; padding: 34px 38px; margin-bottom: 28px; box-shadow: 0 10px 30px rgba(140,120,70,.12);">
+    <div style="font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 12.5px; letter-spacing: 2.5px; text-transform: uppercase; color: #f0ead0; margin-bottom: 4px;">04 · the room, three states</div>
+    <h2 style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 26px; color: #fbf6e8; margin: 0 0 20px; text-shadow: 0 2px 0 rgba(90,95,60,.3);">Empty frame → building → complete</h2>
+    <div style="display: flex; flex-wrap: wrap; gap: 18px; justify-content: center;">
+      <div style="flex: 0 1 480px; display: flex; flex-direction: column; align-items: center;">
+        <div style="min-height: 430px;">{{ roomEmpty }}</div>
+        <div style="font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 14.5px; color: #fbf6e8; background: rgba(90,95,60,.35); border-radius: 999px; padding: 6px 16px;">new house · all 16 pieces are blueprint shadows</div>
+      </div>
+      <div style="flex: 0 1 480px; display: flex; flex-direction: column; align-items: center;">
+        <div style="min-height: 430px;">{{ roomProgress }}</div>
+        <div style="font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 14.5px; color: #fbf6e8; background: rgba(90,95,60,.35); border-radius: 999px; padding: 6px 16px;">session live · companion hammers at the pulsing spot</div>
+      </div>
+      <div style="flex: 0 1 480px; display: flex; flex-direction: column; align-items: center;">
+        <div style="min-height: 430px;">{{ roomFull }}</div>
+        <div style="font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 14.5px; color: #fbf6e8; background: rgba(90,95,60,.35); border-radius: 999px; padding: 6px 16px;">house complete · 16/16 · joins the notebook</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ OTHER ROOM TYPES ============ -->
+  <section data-screen-label="Kitchen and bedroom rooms" style="display: flex; flex-wrap: wrap; gap: 28px; margin-bottom: 28px;">
+    <div style="flex: 1 1 620px; background: #edbec8; border: 1.5px solid #dfaab6; border-radius: 28px; padding: 30px 34px; box-shadow: 0 10px 30px rgba(160,100,110,.12);">
+      <div style="font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 12.5px; letter-spacing: 2.5px; text-transform: uppercase; color: #fdf2ee; margin-bottom: 4px;">05 · every house is a different room</div>
+      <h2 style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 24px; color: #fdf2ee; margin: 0; text-shadow: 0 2px 0 rgba(150,80,95,.3);">Strawberry Loft — Kitchen</h2>
+      <div style="min-height: 470px; display: flex; justify-content: center;">{{ roomKitchen }}</div>
+    </div>
+    <div style="flex: 1 1 620px; background: #b7b1da; border: 1.5px solid #a49dcb; border-radius: 28px; padding: 30px 34px; box-shadow: 0 10px 30px rgba(100,95,150,.14);">
+      <div style="font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 12.5px; letter-spacing: 2.5px; text-transform: uppercase; color: #f4f1fb; margin-bottom: 4px;">unique furniture, unique layout</div>
+      <h2 style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 24px; color: #f4f1fb; margin: 0; text-shadow: 0 2px 0 rgba(85,78,130,.35);">Lavender Nook — Bedroom</h2>
+      <div style="min-height: 470px; display: flex; justify-content: center;">{{ roomBedroom }}</div>
+    </div>
+  </section>
+
+  <!-- ============ MORE ROOMS ============ -->
+  <section data-screen-label="Cafe beach and forest rooms" style="display: flex; flex-wrap: wrap; gap: 28px; margin-bottom: 28px;">
+    <div style="flex: 1 1 420px; background: #eed6a4; border: 1.5px solid #dfc389; border-radius: 28px; padding: 26px 28px; box-shadow: 0 10px 30px rgba(170,130,60,.14);">
+      <div style="font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 12px; letter-spacing: 2.5px; text-transform: uppercase; color: #fdf6e2;">honey caf\u00e9</div>
+      <h2 style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 22px; color: #fdf6e2; margin: 0; text-shadow: 0 2px 0 rgba(150,110,45,.35);">Honey Caf\u00e9 · Caf\u00e9</h2>
+      <div style="min-height: 400px; display: flex; justify-content: center;">{{ roomCafe }}</div>
+    </div>
+    <div style="flex: 1 1 420px; background: #b6d3dc; border: 1.5px solid #a2c2cd; border-radius: 28px; padding: 26px 28px; box-shadow: 0 10px 30px rgba(70,110,125,.14);">
+      <div style="font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 12px; letter-spacing: 2.5px; text-transform: uppercase; color: #eff7f8;">seaside study</div>
+      <h2 style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 22px; color: #eff7f8; margin: 0; text-shadow: 0 2px 0 rgba(60,95,110,.35);">Seaside Study · Beach Studio</h2>
+      <div style="min-height: 400px; display: flex; justify-content: center;">{{ roomBeach }}</div>
+    </div>
+    <div style="flex: 1 1 420px; background: #d5b295; border: 1.5px solid #c5a081; border-radius: 28px; padding: 26px 28px; box-shadow: 0 10px 30px rgba(120,85,55,.16);">
+      <div style="font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 12px; letter-spacing: 2.5px; text-transform: uppercase; color: #f8ece0;">cocoa cabin</div>
+      <h2 style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 22px; color: #f8ece0; margin: 0; text-shadow: 0 2px 0 rgba(100,68,42,.35);">Cocoa Cabin · Forest Cabin</h2>
+      <div style="min-height: 400px; display: flex; justify-content: center;">{{ roomForest }}</div>
+    </div>
+  </section>
+
+  <!-- ============ FURNITURE SETS ============ -->
+  <section data-screen-label="Furniture sets" style="background: #fbf6e8; border: 1.5px solid #e7dbbd; border-radius: 28px; padding: 34px 38px; margin-bottom: 28px; box-shadow: 0 10px 30px rgba(140,120,70,.08);">
+    <div style="font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 12.5px; letter-spacing: 2.5px; text-transform: uppercase; color: #a49f7d; margin-bottom: 4px;">06 · furniture · 16 rewards per house</div>
+    <h2 style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 26px; color: #6c7150; margin: 0 0 6px;">Six sets fully drawn, 96 unique pieces</h2>
+    <p style="margin: 0 0 22px; font-size: 14px; color: #85815f; max-width: 760px;">One 25-minute session = one piece, in build order. The small inset shows each piece's blueprint-shadow state. Toggle insets off in tweaks.</p>
+
+    <div style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 18px; color: #6c7150; margin: 0 0 14px;">🍵 Matcha Cottage · Living Room</div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(196px, 1fr)); gap: 16px; margin-bottom: 30px;">
+      <sc-for list="{{ furnLiving }}" as="f" hint-placeholder-count="16">
+        <div style="background: #f3ecd6; border-radius: 18px; padding: 12px; position: relative;">
+          <div style="position: absolute; top: 10px; left: 12px; font-family: 'Fredoka', sans-serif; font-size: 11.5px; font-weight: 500; color: #b3ae8b;">{{ f.num }}</div>
+          <div style="height: 148px; display: flex; align-items: center; justify-content: center; overflow: hidden;">{{ f.el }}</div>
+          <sc-if value="{{ ghostsOn }}" hint-placeholder-val="{{ true }}">
+            <div style="position: absolute; top: 8px; right: 8px; width: 74px; height: 62px; background: #ece3c8; border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden;">{{ f.ghostEl }}</div>
+          </sc-if>
+          <div style="display: flex; align-items: center; gap: 7px; margin-top: 6px;">
+            <span style="font-size: 15px;">{{ f.icon }}</span>
+            <span style="font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 14px; color: #6c7150;">{{ f.label }}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 18px; color: #a25c6d; margin: 0 0 14px;">🍓 Strawberry Loft · Kitchen</div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(196px, 1fr)); gap: 16px; margin-bottom: 30px;">
+      <sc-for list="{{ furnKitchen }}" as="f" hint-placeholder-count="16">
+        <div style="background: #fbeff1; border-radius: 18px; padding: 12px; position: relative;">
+          <div style="position: absolute; top: 10px; left: 12px; font-family: 'Fredoka', sans-serif; font-size: 11.5px; font-weight: 500; color: #cfa3ad;">{{ f.num }}</div>
+          <div style="height: 148px; display: flex; align-items: center; justify-content: center; overflow: hidden;">{{ f.el }}</div>
+          <sc-if value="{{ ghostsOn }}" hint-placeholder-val="{{ true }}">
+            <div style="position: absolute; top: 8px; right: 8px; width: 74px; height: 62px; background: #f4dfe3; border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden;">{{ f.ghostEl }}</div>
+          </sc-if>
+          <div style="display: flex; align-items: center; gap: 7px; margin-top: 6px;">
+            <span style="font-size: 15px;">{{ f.icon }}</span>
+            <span style="font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 14px; color: #a25c6d;">{{ f.label }}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 18px; color: #6b64a3; margin: 0 0 14px;">🌙 Lavender Nook · Bedroom</div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(196px, 1fr)); gap: 16px;">
+      <sc-for list="{{ furnBedroom }}" as="f" hint-placeholder-count="16">
+        <div style="background: #f1eefb; border-radius: 18px; padding: 12px; position: relative;">
+          <div style="position: absolute; top: 10px; left: 12px; font-family: 'Fredoka', sans-serif; font-size: 11.5px; font-weight: 500; color: #a8a2c9;">{{ f.num }}</div>
+          <div style="height: 148px; display: flex; align-items: center; justify-content: center; overflow: hidden;">{{ f.el }}</div>
+          <sc-if value="{{ ghostsOn }}" hint-placeholder-val="{{ true }}">
+            <div style="position: absolute; top: 8px; right: 8px; width: 74px; height: 62px; background: #e5e0f3; border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden;">{{ f.ghostEl }}</div>
+          </sc-if>
+          <div style="display: flex; align-items: center; gap: 7px; margin-top: 6px;">
+            <span style="font-size: 15px;">{{ f.icon }}</span>
+            <span style="font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 14px; color: #6b64a3;">{{ f.label }}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 18px; color: #93702f; margin: 30px 0 14px;">🍯 Honey Café · Café</div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(196px, 1fr)); gap: 16px; margin-bottom: 30px;">
+      <sc-for list="{{ furnCafe }}" as="f" hint-placeholder-count="16">
+        <div style="background: #fdf3dd; border-radius: 18px; padding: 12px; position: relative;">
+          <div style="position: absolute; top: 10px; left: 12px; font-family: 'Fredoka', sans-serif; font-size: 11.5px; font-weight: 500; color: #c9ab74;">{{ f.num }}</div>
+          <div style="height: 148px; display: flex; align-items: center; justify-content: center; overflow: hidden;">{{ f.el }}</div>
+          <sc-if value="{{ ghostsOn }}" hint-placeholder-val="{{ true }}">
+            <div style="position: absolute; top: 8px; right: 8px; width: 74px; height: 62px; background: #f5e6c4; border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden;">{{ f.ghostEl }}</div>
+          </sc-if>
+          <div style="display: flex; align-items: center; gap: 7px; margin-top: 6px;">
+            <span style="font-size: 15px;">{{ f.icon }}</span>
+            <span style="font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 14px; color: #93702f;">{{ f.label }}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 18px; color: #4f7987; margin: 0 0 14px;">🌊 Seaside Study · Beach Studio</div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(196px, 1fr)); gap: 16px; margin-bottom: 30px;">
+      <sc-for list="{{ furnBeach }}" as="f" hint-placeholder-count="16">
+        <div style="background: #ecf5f6; border-radius: 18px; padding: 12px; position: relative;">
+          <div style="position: absolute; top: 10px; left: 12px; font-family: 'Fredoka', sans-serif; font-size: 11.5px; font-weight: 500; color: #90b4bd;">{{ f.num }}</div>
+          <div style="height: 148px; display: flex; align-items: center; justify-content: center; overflow: hidden;">{{ f.el }}</div>
+          <sc-if value="{{ ghostsOn }}" hint-placeholder-val="{{ true }}">
+            <div style="position: absolute; top: 8px; right: 8px; width: 74px; height: 62px; background: #ddebee; border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden;">{{ f.ghostEl }}</div>
+          </sc-if>
+          <div style="display: flex; align-items: center; gap: 7px; margin-top: 6px;">
+            <span style="font-size: 15px;">{{ f.icon }}</span>
+            <span style="font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 14px; color: #4f7987;">{{ f.label }}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 18px; color: #6e4b33; margin: 0 0 14px;">🍂 Cocoa Cabin · Forest Cabin</div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(196px, 1fr)); gap: 16px;">
+      <sc-for list="{{ furnForest }}" as="f" hint-placeholder-count="16">
+        <div style="background: #f6ebdf; border-radius: 18px; padding: 12px; position: relative;">
+          <div style="position: absolute; top: 10px; left: 12px; font-family: 'Fredoka', sans-serif; font-size: 11.5px; font-weight: 500; color: #b98a63;">{{ f.num }}</div>
+          <div style="height: 148px; display: flex; align-items: center; justify-content: center; overflow: hidden;">{{ f.el }}</div>
+          <sc-if value="{{ ghostsOn }}" hint-placeholder-val="{{ true }}">
+            <div style="position: absolute; top: 8px; right: 8px; width: 74px; height: 62px; background: #eddcca; border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden;">{{ f.ghostEl }}</div>
+          </sc-if>
+          <div style="display: flex; align-items: center; gap: 7px; margin-top: 6px;">
+            <span style="font-size: 15px;">{{ f.icon }}</span>
+            <span style="font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 14px; color: #6e4b33;">{{ f.label }}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- ============ THEMES ============ -->
+  <section data-screen-label="Theme palettes" style="background: #fbf6e8; border: 1.5px solid #e7dbbd; border-radius: 28px; padding: 34px 38px; margin-bottom: 28px; box-shadow: 0 10px 30px rgba(140,120,70,.08);">
+    <div style="font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 12.5px; letter-spacing: 2.5px; text-transform: uppercase; color: #a49f7d; margin-bottom: 4px;">07 · house themes</div>
+    <h2 style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 26px; color: #6c7150; margin: 0 0 20px;">Six houses, six rooms, six palettes</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px;">
+      <sc-for list="{{ themeCards }}" as="t" hint-placeholder-count="6">
+        <div style="border-radius: 20px; overflow: hidden; border: 1.5px solid #e7dbbd;">
+          <div style="height: 86px; display: flex; align-items: center; justify-content: center; gap: 0; background: {{ t.bg }};">
+            <span style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 26px; color: #fffdf2; text-shadow: 0 2px 0 rgba(0,0,0,.12); animation: floaty 4s ease-in-out infinite; display: inline-block;">{{ t.emoji }} {{ t.name }}</span>
+          </div>
+          <div style="background: #fdfaf0; padding: 14px 18px 18px;">
+            <div style="font-family: 'Fredoka', sans-serif; font-size: 13.5px; font-weight: 500; color: {{ t.ink }};">{{ t.room }} · timer ink <span style="display: inline-block; width: 13px; height: 13px; border-radius: 50%; background: {{ t.ink }}; vertical-align: -2px;"></span></div>
+            <div style="font-size: 12.5px; color: #8a8668; margin: 3px 0 10px;">{{ t.flavor }}</div>
+            <div style="display: flex; gap: 6px;">
+              <span style="flex: 1; height: 30px; border-radius: 9px; background: {{ t.s1 }};"></span>
+              <span style="flex: 1; height: 30px; border-radius: 9px; background: {{ t.s2 }};"></span>
+              <span style="flex: 1; height: 30px; border-radius: 9px; background: {{ t.s3 }};"></span>
+              <span style="flex: 1; height: 30px; border-radius: 9px; background: {{ t.s4 }};"></span>
+              <span style="flex: 1; height: 30px; border-radius: 9px; background: {{ t.s5 }};"></span>
+              <span style="flex: 1; height: 30px; border-radius: 9px; background: {{ t.s6 }};"></span>
+            </div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+  </section>
+
+  <!-- ============ FX ============ -->
+  <section data-screen-label="Celebration FX" style="background: #fbf6e8; border: 1.5px solid #e7dbbd; border-radius: 28px; padding: 34px 38px; margin-bottom: 28px; box-shadow: 0 10px 30px rgba(140,120,70,.08);">
+    <div style="font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 12.5px; letter-spacing: 2.5px; text-transform: uppercase; color: #a49f7d; margin-bottom: 4px;">08 · celebration &amp; ambient fx</div>
+    <h2 style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 26px; color: #6c7150; margin: 0 0 20px;">Reward moments</h2>
+    <div style="display: flex; flex-wrap: wrap; gap: 22px;">
+      <sc-for list="{{ fxCards }}" as="x" hint-placeholder-count="7">
+        <div style="flex: 0 0 224px; background: #f3ecd6; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+          <div style="height: 140px; width: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden;">{{ x.el }}</div>
+          <div style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 15px; color: #6c7150;">{{ x.name }}</div>
+          <div style="font-family: ui-monospace, monospace; font-size: 11px; background: #efe7cf; padding: 2px 8px; border-radius: 6px; color: #6f6b4e;">{{ x.kf }}</div>
+          <div style="font-size: 12.5px; line-height: 1.5; color: #8a8668; text-align: center;">{{ x.note }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- ============ UI ATOMS ============ -->
+  <section data-screen-label="UI atoms" style="background: #fbf6e8; border: 1.5px solid #e7dbbd; border-radius: 28px; padding: 34px 38px; box-shadow: 0 10px 30px rgba(140,120,70,.08);">
+    <div style="font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 12.5px; letter-spacing: 2.5px; text-transform: uppercase; color: #a49f7d; margin-bottom: 4px;">09 · ui atoms</div>
+    <h2 style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 26px; color: #6c7150; margin: 0 0 20px;">Squishy interface pieces (matcha palette)</h2>
+    <div style="display: flex; flex-wrap: wrap; gap: 22px; align-items: flex-start;">
+      <div style="background: #f3ecd6; border-radius: 20px; padding: 22px; display: flex; flex-direction: column; gap: 14px; align-items: center;">
+        <button style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 19px; color: #fffdf2; background: linear-gradient(160deg, #b8bd97, #a2a781); border: none; border-radius: 999px; padding: 14px 40px; cursor: pointer; box-shadow: inset 0 2px 0 rgba(255,255,255,.45), inset 0 -4px 0 rgba(90,95,60,.28), 0 8px 18px rgba(108,90,50,.22); text-shadow: 0 1.5px 0 rgba(90,95,60,.3);">start focus ♡</button>
+        <button style="font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 15px; color: #6c7150; background: #fdfaf0; border: 2px solid #dfd3ae; border-radius: 999px; padding: 9px 26px; cursor: pointer; box-shadow: 0 4px 10px rgba(140,120,70,.12);">skip break</button>
+        <div style="display: flex; gap: 8px;">
+          <span style="font-family: 'Fredoka', sans-serif; font-size: 13px; font-weight: 500; color: #fffdf2; background: #a9ae8c; border-radius: 999px; padding: 5px 14px; box-shadow: inset 0 1.5px 0 rgba(255,255,255,.4);">25 · 5 classic</span>
+          <span style="font-family: 'Fredoka', sans-serif; font-size: 13px; font-weight: 500; color: #8a8668; background: #ece3c8; border-radius: 999px; padding: 5px 14px;">50 · 10 deep</span>
+        </div>
+        <div style="font-size: 12px; color: #8a8668;">primary / secondary / mode chips</div>
+      </div>
+      <div style="background: #f3ecd6; border-radius: 20px; padding: 22px; width: 300px;">
+        <div style="background: #fdfaf0; border: 1.5px solid #e7dbbd; border-radius: 16px; padding: 16px 18px; box-shadow: 0 6px 14px rgba(140,120,70,.1);">
+          <div style="display: flex; align-items: center; gap: 9px;">
+            <span style="width: 34px; height: 34px; border-radius: 11px; background: linear-gradient(160deg, #c3c6a6, #a9ae8c); display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: inset 0 2px 0 rgba(255,255,255,.4);">🛋</span>
+            <div>
+              <div style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 14.5px; color: #6c7150;">Squishy Sofa</div>
+              <div style="font-size: 11.5px; color: #a49f7d;">session 3 · jul 9, 2026 · 25 min</div>
+            </div>
+          </div>
+          <div style="margin-top: 10px; font-size: 13px; line-height: 1.55; color: #6f6b4e; background: #f6f0dd; border-radius: 10px; padding: 10px 12px;">“finished the stats problem set — q1 to q14, only cried once ♡”</div>
+        </div>
+        <div style="font-size: 12px; color: #8a8668; margin-top: 10px; text-align: center;">journal entry card · one per furniture</div>
+      </div>
+      <div style="background: #f3ecd6; border-radius: 20px; padding: 22px; width: 330px;">
+        <div style="background: #fdfaf0; border-radius: 18px; padding: 20px; box-shadow: 0 10px 24px rgba(140,120,70,.16); text-align: center;">
+          <div style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 17px; color: #6c7150;">✦ the Reading Armchair is built! ✦</div>
+          <div style="font-size: 12.5px; color: #8a8668; margin: 4px 0 12px;">name this win: what did you get done?</div>
+          <div style="border: 2px dashed #dfd3ae; border-radius: 12px; padding: 11px 14px; font-size: 13.5px; color: #b3ae8b; text-align: left; background: #fbf6e8;">read 40 pages of orgo…</div>
+          <button style="margin-top: 12px; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 15px; color: #fffdf2; background: linear-gradient(160deg, #b8bd97, #a2a781); border: none; border-radius: 999px; padding: 10px 30px; cursor: pointer; box-shadow: inset 0 2px 0 rgba(255,255,255,.45), inset 0 -3px 0 rgba(90,95,60,.28), 0 6px 14px rgba(108,90,50,.2);">keep it ♡</button>
+        </div>
+        <div style="font-size: 12px; color: #8a8668; margin-top: 10px; text-align: center;">naming modal · appears with the celebration</div>
+      </div>
+    </div>
+  </section>
+
+  <footer style="text-align: center; margin-top: 34px; font-size: 12.5px; color: #a49f7d;">nooki asset sheet · companion + ghost-inset options live in tweaks · prototype &amp; PRD ship alongside</footer>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;companion&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;bunny&quot;, &quot;cat&quot;, &quot;bear&quot;], &quot;default&quot;: &quot;bunny&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Preview&quot; },
+  &quot;showGhosts&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Preview&quot; }
+}">
+class Component extends DCLogic {
+  state = { ready: false };
+
+  async componentDidMount() {
+    try {
+      const clayMod = await import('./assets/clay.js');
+      const setsMod = await import('./assets/sets.js');
+      const sets2Mod = await import('./assets/sets2.js');
+      this.clayMod = clayMod;
+      this.clay = clayMod.makeClay(React);
+      this.sets = setsMod.makeSets(React, this.clay);
+      this.sets2 = sets2Mod.makeSets2(React, this.clay);
+      this._cache = {};
+      this.setState({ ready: true });
+    } catch (e) {
+      console.error('asset sheet failed to load clay library', e);
+    }
+  }
+
+  build(kind) {
+    if (this._cache[kind]) return this._cache[kind];
+    const clay = this.clay, sets = this.sets, THEMES = this.clayMod.THEMES, COMPS = this.clayMod.COMPANIONS;
+    const h = React.createElement;
+    const T = (id) => THEMES.filter((t) => t.id === id)[0];
+    const Tm = T('matcha'), Ts = T('strawberry'), Tl = T('lavender'), Th = T('honey'), Tb = T('seaside'), Tc = T('cocoa');
+
+    const compCards = COMPS.map((c) => ({
+      name: c.name, species: c.species,
+      unlockNote: c.unlock === 0 ? 'starter companion' : 'unlocks after ' + c.unlock + (c.unlock === 1 ? ' finished house' : ' finished houses'),
+      el: clay.companion({ kind: c.species, pose: 'idle', scale: 1.3 })
+    }));
+
+    const pose = (p) => clay.companion({ kind, pose: p, scale: 1.22 });
+    const poseCards = [
+      { name: 'Idle', kf: 'bunbob · 2.6s loop', note: 'default in-room loop: gentle squash-and-stretch bob, blink every ~5s', el: pose('idle') },
+      { name: 'Hop / Walk', kf: 'bunhop · 0.75s loop', note: 'movement between spots: position eases 1.6s while the hop loops', el: pose('walk') },
+      { name: 'Build', kf: 'bunlean + swing', note: 'during focus: mallet swings, dust puffs at the blueprint spot', el: h('div', { style: { position: 'relative' } }, [pose('build'), h('div', { key: 'pf', style: { position: 'absolute', left: '40px', bottom: '-4px' } }, clay.puffs('p', 1.1))]) },
+      { name: 'Nap', kf: 'breathe + zfloat', note: 'break idle: ears droop, eyes close, z\u2019s float up and fade', el: pose('nap') },
+      { name: 'Tea Sip', kf: 'sip + steam', note: 'break idle (alt): holds a warm mug, steam wisps rise', el: pose('tea') },
+      { name: 'Cheer', kf: 'cheerjump + twinkle', note: 'furniture complete! jumps with sparkles while confetti bursts', el: pose('cheer') }
+    ];
+
+    const livingKeys = clay.FURN.map((f) => f.key);
+    const roomEmpty = clay.room({ theme: Tm, built: [], targetKey: 'window', bunny: { x: 210, y: 210, pose: 'idle', kind }, scale: .78, w: 470, h: 430, lift: 40 });
+    const roomProgress = clay.room({ theme: Tm, built: livingKeys.slice(0, 5), targetKey: 'coffeetable', bunny: { x: 151, y: 208, pose: 'build', kind }, scale: .78, w: 470, h: 430, lift: 40 });
+    const roomFull = clay.room({ theme: Tm, built: livingKeys, bunny: { x: 210, y: 215, pose: 'cheer', kind }, scale: .78, w: 470, h: 430, lift: 40 });
+    const roomKitchen = clay.room({ theme: Ts, set: this.sets.kitchen, built: this.sets.kitchen.FURN.map((f) => f.key), bunny: { x: 150, y: 214, pose: 'tea', kind }, scale: .82, w: 560, h: 470, lift: 40 });
+    const roomBedroom = clay.room({ theme: Tl, set: this.sets.bedroom, built: this.sets.bedroom.FURN.map((f) => f.key), bunny: { x: 200, y: 240, pose: 'nap', kind }, scale: .82, w: 560, h: 470, lift: 40 });
+    const roomCafe = clay.room({ theme: Th, set: this.sets2.cafe, built: this.sets2.cafe.FURN.map((f) => f.key), bunny: { x: 150, y: 152, pose: 'idle', kind }, scale: .7, w: 420, h: 400, lift: 40 });
+    const roomBeach = clay.room({ theme: Tb, set: this.sets2.beach, built: this.sets2.beach.FURN.map((f) => f.key), bunny: { x: 100, y: 116, pose: 'cheer', kind }, scale: .7, w: 420, h: 400, lift: 40 });
+    const roomForest = clay.room({ theme: Tc, set: this.sets2.forest, built: this.sets2.forest.FURN.map((f) => f.key), bunny: { x: 150, y: 130, pose: 'tea', kind }, scale: .7, w: 420, h: 400, lift: 40 });
+
+    const furnCards = (set, theme) => (set ? set.FURN : clay.FURN).map((f, i) => ({
+      num: (i + 1 < 10 ? '0' : '') + (i + 1), icon: f.icon, label: f.label,
+      el: clay.itemStage(f.key, theme, { set, scale: f.fw > 120 || f.fd > 120 ? .62 : .88, w: 186, h: 148 }),
+      ghostEl: clay.itemStage(f.key, theme, { set, ghost: true, scale: .3, w: 70, h: 58 })
+    }));
+
+    const themeCards = THEMES.map((t) => ({
+      name: t.name, room: t.room, flavor: t.flavor, ink: t.ink, bg: t.bg,
+      emoji: { matcha: '🍵', strawberry: '🍓', lavender: '🌙', honey: '🍯', seaside: '🌊', cocoa: '🍂' }[t.id],
+      s1: t.bg, s2: t.wallIn, s3: t.floor, s4: t.clay, s5: t.accent, s6: t.gold
+    }));
+
+
+
+    const fxCards = [
+      { name: 'Confetti Burst', kf: 'cfburst · 0.9–1.5s', note: 'fires when a piece finishes + a bigger one when the house completes', el: h('div', { style: { position: 'relative', width: '190px', height: '140px' } }, clay.confetti('cf', { loop: true, spread: 95, stagger: 1.4 })) },
+      { name: 'Drop-in Build', kf: 'dropin · 0.8s', note: 'the new furniture falls from above with a squashy bounce', el: clay.itemStage('stool', Tm, { anim: 'dropin 2.4s cubic-bezier(.22,1.2,.36,1) infinite', scale: .9, w: 186, h: 140 }) },
+      { name: 'Blueprint Pulse', kf: 'ghostpulse · 1.8s', note: 'the next furniture spot breathes while a session runs', el: clay.itemStage('stool', Tm, { ghost: true, pulse: true, scale: .9, w: 186, h: 140 }) },
+      { name: 'Dust Puffs', kf: 'puff · 1.1s stagger', note: 'cream puffs at the hammer point during build', el: h('div', { style: { position: 'relative', width: '110px', height: '80px', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' } }, clay.puffs('pp', 1.7)) },
+      { name: 'Sleepy Zzz', kf: 'zfloat · 2.4s stagger', note: 'floats off the napping companion during breaks', el: h('div', { style: { position: 'relative', width: '90px', height: '90px' } }, clay.zzz('z')) },
+      { name: 'Sparkle Twinkle', kf: 'twinkle · 1.4–2.8s', note: 'ambient on completed rooms; dense burst on cheer', el: h('div', { style: { position: 'relative', width: '170px', height: '120px' } }, clay.sparkles('sp', 9, 170, 120)) },
+      { name: 'Steam Wisps', kf: 'steam · 2.6s', note: 'tea set, kettle, and break-time mug all share it', el: h('div', { style: { position: 'relative', width: '80px', height: '90px', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' } }, h('div', { style: { position: 'relative', width: '20px', height: '30px', transform: 'scale(2.2)', transformOrigin: '50% 100%' } }, clay.steam('st', 0, 4, 1))) }
+    ];
+
+    this._cache[kind] = {
+      compCards, poseCards, roomEmpty, roomProgress, roomFull, roomKitchen, roomBedroom, roomCafe, roomBeach, roomForest,
+      furnLiving: furnCards(null, Tm), furnKitchen: furnCards(this.sets.kitchen, Ts), furnBedroom: furnCards(this.sets.bedroom, Tl),
+      furnCafe: furnCards(this.sets2.cafe, Th), furnBeach: furnCards(this.sets2.beach, Tb), furnForest: furnCards(this.sets2.forest, Tc),
+      themeCards, fxCards
+    };
+    return this._cache[kind];
+  }
+
+  renderVals() {
+    const ghostsOn = this.props.showGhosts != null ? this.props.showGhosts : true;
+    if (!this.state.ready) return { ghostsOn };
+    const kind = this.props.companion || 'bunny';
+    return Object.assign({ ghostsOn }, this.build(kind));
+  }
+}
+
+</script>
+</body>
+</html>
