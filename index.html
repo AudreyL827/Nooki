@@ -635,7 +635,13 @@ class Component extends DCLogic {
   builtKeys(id) { return this.houseData(id).built.map((b) => b.key); }
   nextFurn(id) { const bk = this.builtKeys(id); return this.furnOf(id).filter((f) => bk.indexOf(f.key) < 0)[0] || null; }
   completedCount() { const H = this.state.houses; let n = 0; for (const id in H) { if (H[id].built.length >= this.furnOf(id).length) n++; n += (H[id].archives || []).length; } return n; }
-  demoMult() { return (this.props.demoSpeed != null ? this.props.demoSpeed : true) ? 60 : 1; }
+  demoMult() {
+    // Real timers by default. Devs can speed the clock 60x (1 min = 1 s) by
+    // adding ?demo to the URL, or running localStorage.setItem('nooki.demo','1').
+    let demo = false;
+    try { demo = new URLSearchParams(location.search).has('demo') || localStorage.getItem('nooki.demo') === '1'; } catch (e) {}
+    return demo ? 60 : 1;
+  }
   mode() { return MODES[this.state.mode || 'classic']; }
   fmt(s) { s = Math.max(0, Math.ceil(s)); const m = Math.floor(s / 60); const ss = s % 60; return (m < 10 ? '0' : '') + m + ':' + (ss < 10 ? '0' : '') + ss; }
 
