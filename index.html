@@ -501,7 +501,7 @@ const TRACKS = {
 };
 // Optional: hard-code your Spotify app Client ID here to skip in-app setup.
 // Otherwise players paste it once (saved to localStorage) via the music card.
-const SPOTIFY_CLIENT_ID_DEFAULT = '';
+const SPOTIFY_CLIENT_ID_DEFAULT = 'b80ba6ff59b54e9ab5baafb7b31d06d6';
 function spotifyClientId() { try { return localStorage.getItem('nooki.spotify.clientId') || SPOTIFY_CLIENT_ID_DEFAULT; } catch (e) { return SPOTIFY_CLIENT_ID_DEFAULT; } }
 function spotifyRedirectUri() { return location.origin + location.pathname; }
 // Optional accounts: paste your Firebase config JSON (Project settings → Web app).

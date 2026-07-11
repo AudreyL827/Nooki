@@ -1,92 +1,82 @@
-# ✦ Nooki ✦
+# Nooki
 
-A cozy pomodoro study game. Each completed focus session builds one piece of
-furniture in a tiny soft-clay room — a chibi companion (Mochi the bunny, Suki
-the cat, or **Maple the bear**) hops over and hammers while you study. Finished
-pieces get "named" with what you got done, becoming a little journal of wins.
-Six houses, six room types, one hue family each.
+A cozy, gamified focus timer. Every study session builds one piece of furniture in a tiny soft-clay room, and every finished piece is named with what you got done, turning your effort into a little journal of wins.
 
-**Live app:** https://audreyl827.github.io/Nooki/
+**Live app: [audreyl827.github.io/Nooki](https://audreyl827.github.io/Nooki/)**
+
+Read the product doc: **[PRD.md](./PRD.md)**
 
 ## Features
-- 25·5 classic / 50·10 deep pomodoro modes with auto-continue
-- Six rooms to build; three unlockable companion builders
-- **Spotify** — connect your own account and play/skip/pick playlists in-app (Premium)
-- **Accounts** — optional Google sign-in; your rooms & wins sync privately per account
-- Soft UI sound effects (Web Audio)
-- Installable to your phone home screen (PWA); responsive on mobile & desktop
-- Privacy Policy + Terms included
 
-## What's in here
-- `index.html` — the game (art + logic)
-- `support.js` — small React-based design-component runtime
-- `assets/` — art (`clay.js`, `sets.js`, `sets2.js`), sound (`audio.js`),
-  `spotify.js`, `cloud.js` (accounts), `doc-page.js`
-- `Animation Assets.dc.html`, `PRD.dc.html` — the design/asset sheet and PRD
-- `privacy.html`, `terms.html` — legal pages (edit the contact email!)
+- 25/5 (classic) and 50/10 (deep) Pomodoro modes with optional auto-continue
+- Six themed rooms to build (Cottage, Kitchen, Bedroom, Cafe, Beach Studio, Forest Cabin), 16 pieces each
+- A wins journal: name what you accomplished on every completed piece
+- Three unlockable companion builders (bunny, cat, bear)
+- Sign in with Google to save progress across devices (optional)
+- Connect your own Spotify to play, skip, and pick playlists in-app (optional, needs Premium)
+- Installable to your phone home screen (PWA), responsive on mobile and desktop
+- First-run onboarding, dynamic tab icon, Privacy Policy and Terms
 
----
+## For players
 
-## Setup (one-time, to enable the optional integrations)
+Nothing to install or configure. Open the link, press start, and focus. Accounts and Spotify are optional and already set up: just tap "sign in" or "connect spotify" and log into your own account.
 
-The game works out of the box with **local** save. Accounts and Spotify each
-need a free developer app that **you** own — paste the credentials into the app
-(saved in your browser) or hard-code them at the top of the `data-dc-script` in
-`index.html` (`SPOTIFY_CLIENT_ID_DEFAULT`, `FIREBASE_CONFIG_DEFAULT`).
+> Note: Spotify's app is in Development mode, so in-app music is currently limited to the first 25 people I add in the Spotify dashboard. Everyone else can use the full app; music just stays off until I request extended access. Playback also requires Spotify Premium (Spotify's rule).
 
-### A. Accounts + cloud save (Firebase)
-1. Create a project at <https://console.firebase.google.com>.
-2. Add a **Web app**; copy its `firebaseConfig` (apiKey, authDomain, projectId, appId…).
-3. **Authentication → Sign-in method →** enable **Google**.
-4. **Authentication → Settings → Authorized domains →** add `audreyl827.github.io`
-   (and `localhost` for testing).
-5. **Firestore Database →** create it, then set these **Security Rules** so each
-   user can only ever touch their own save (this is what prevents any data leak
-   or cross-over between accounts):
+## Tech
+
+A dependency-light single-page app: all room art is procedural DOM/CSS "clay" (no image files), rendered by a small React-based runtime (`support.js`). Art lives in `assets/` (`clay.js`, `sets.js`, `sets2.js`), sound in `assets/audio.js`, Spotify in `assets/spotify.js`, accounts in `assets/cloud.js`. Hosted free on GitHub Pages, auto-deployed on every push.
+
+<details>
+<summary><b>Developer setup</b> (already configured, kept here for reference)</summary>
+
+The game runs out of the box with local save. Accounts (Firebase) and music (Spotify) are enabled by credentials hard-coded at the top of the script in `index.html` (`FIREBASE_CONFIG_DEFAULT`, `SPOTIFY_CLIENT_ID_DEFAULT`). These are public client identifiers, safe to commit; data safety comes from the Firestore rules below, not from hiding a key.
+
+### Accounts + cloud save (Firebase)
+1. Create a project at [console.firebase.google.com](https://console.firebase.google.com).
+2. Add a Web app and copy its `firebaseConfig`.
+3. Authentication, Sign-in method: enable Google.
+4. Authentication, Settings, Authorized domains: add `audreyl827.github.io` (and `localhost` for testing).
+5. Firestore Database: create it, then publish these Security Rules so each user can only ever read/write their own save (this is what prevents any cross-account data access):
 
    ```
    rules_version = '2';
    service cloud.firestore {
-     match /databases/{db}/documents {
+     match /databases/{database}/documents {
        match /saves/{uid} {
          allow read, write: if request.auth != null && request.auth.uid == uid;
        }
      }
    }
    ```
-6. In Nooki, click **sign in → spotify setup**-style panel, paste the config JSON, save.
+6. Put the config in `FIREBASE_CONFIG_DEFAULT` (or paste it into the in-app account panel).
 
-> The Firebase web API key is a **public identifier**, not a secret — safe to ship
-> in client code. Data safety comes from the rules above, not from hiding the key.
+### Spotify (play your own music)
+1. Create an app at [developer.spotify.com/dashboard](https://developer.spotify.com/dashboard).
+2. Add the Redirect URI exactly: `https://audreyl827.github.io/Nooki/` (plus a `http://localhost:PORT/...` URL for local testing).
+3. Put the Client ID in `SPOTIFY_CLIENT_ID_DEFAULT`.
+4. To open music to more than 25 users, request extended quota in the Spotify dashboard.
 
-### B. Spotify (play your own music)
-1. Create an app at <https://developer.spotify.com/dashboard>.
-2. Add this **Redirect URI** exactly: `https://audreyl827.github.io/Nooki/`
-   (and your `http://localhost:PORT/...` URL for local testing).
-3. Copy the **Client ID**; in Nooki click **connect spotify → spotify setup**, paste it.
-4. Playback in the browser requires **Spotify Premium** (Spotify's rule, not ours).
+</details>
 
----
+<details>
+<summary><b>Publishing and local dev</b></summary>
 
-## Publishing (GitHub Pages)
-This repo ships a workflow at `.github/workflows/deploy.yml`. On every push to
-`main` it builds and deploys to GitHub Pages automatically. If Pages isn't on yet:
-**Settings → Pages → Build and deployment → Source: GitHub Actions**. Done — the
-site publishes at the URL above. (Prefer a custom domain later? Vercel or Netlify
-can import this repo unchanged; just update the Spotify redirect URI + Firebase
-authorized domain to the new URL.)
+A workflow at `.github/workflows/deploy.yml` deploys to GitHub Pages on every push to `main`. If Pages is not on yet: Settings, Pages, Build and deployment, Source: GitHub Actions. To move to a custom domain later, Vercel or Netlify can import this repo unchanged; just update the Spotify redirect URI and Firebase authorized domain to the new URL.
 
-## Security & privacy posture
-- HTTPS everywhere (GitHub Pages).
-- Per-user data isolation enforced by Firestore rules (see above).
-- Data minimisation: we store only game progress; **no password is ever seen**
-  (Google handles it), no email stored in the game DB, no ads, no trackers, nothing sold.
-- Spotify/Firebase tokens live in the user's own browser.
-- Before a serious launch: fill in the contact email in `privacy.html` / `terms.html`
-  and have a lawyer review them for your jurisdiction.
-
-## Running locally
-Static site — serve over HTTP so module imports work:
+Run locally (serve over HTTP so module imports work):
 ```
-python3 -m http.server 8000   # then open http://localhost:8000
+python3 -m http.server 8000    # then open http://localhost:8000
 ```
+
+</details>
+
+<details>
+<summary><b>Security and privacy</b></summary>
+
+- HTTPS everywhere; per-user data isolation enforced by the Firestore rules above.
+- Data minimisation: only game progress is stored. No password is ever seen (Google handles it), no email is kept in the game database, no ads, no trackers, nothing sold.
+- Spotify and Firebase tokens live only in the user's own browser.
+- Before a wider launch, fill in the contact email in `privacy.html` and `terms.html`, and have a lawyer review them for your jurisdiction.
+
+</details>
