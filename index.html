@@ -616,6 +616,31 @@ class Component extends DCLogic {
     if (code === 'not-configured' || code === 'load-failed') return 'add your firebase config in setup first.';
     return 'sign-in hiccup: ' + code;
   }
+
+  // ---------- dynamic favicon (theme colour + current builder) ----------
+  faviconDataUri(T, sp) {
+    const fur = sp === 'bear' ? '#cca375' : '#f4ead6';
+    const furD = sp === 'bear' ? '#b98a5c' : '#e6d6bb';
+    const ink = '#4a3828';
+    let ears;
+    if (sp === 'bunny') ears = `<ellipse cx="24" cy="16" rx="6" ry="13" fill="${fur}"/><ellipse cx="40" cy="16" rx="6" ry="13" fill="${fur}"/>`;
+    else if (sp === 'cat') ears = `<path d="M17 23 L21 8 L29 20 Z" fill="${fur}"/><path d="M47 23 L43 8 L35 20 Z" fill="${fur}"/>`;
+    else ears = `<circle cx="21" cy="19" r="8" fill="${fur}"/><circle cx="43" cy="19" r="8" fill="${fur}"/><circle cx="21" cy="19" r="3.6" fill="${furD}"/><circle cx="43" cy="19" r="3.6" fill="${furD}"/>`;
+    const face = sp === 'bear'
+      ? `<ellipse cx="32" cy="41" rx="12" ry="9" fill="#f4e5cd"/><ellipse cx="32" cy="38" rx="3.4" ry="2.6" fill="${ink}"/>`
+      : (sp === 'cat' ? `<path d="M9 35 L21 37 M9 40 L21 39" stroke="rgba(120,104,72,.55)" stroke-width="1.4" fill="none"/><path d="M55 35 L43 37 M55 40 L43 39" stroke="rgba(120,104,72,.55)" stroke-width="1.4" fill="none"/>` : '');
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="15" fill="${T.clay}"/>${ears}<circle cx="32" cy="36" r="17" fill="${fur}"/>${face}<circle cx="26" cy="34" r="2.4" fill="${ink}"/><circle cx="38" cy="34" r="2.4" fill="${ink}"/></svg>`;
+    return 'data:image/svg+xml,' + encodeURIComponent(svg);
+  }
+  updateFavicon() {
+    try {
+      const T = this.themeOf(this.state.houseId); if (!T) return;
+      let link = document.querySelector('link[rel="icon"]');
+      if (!link) { link = document.createElement('link'); link.rel = 'icon'; document.head.appendChild(link); }
+      link.type = 'image/svg+xml';
+      link.href = this.faviconDataUri(T, this.state.companion || 'bunny');
+    } catch (e) {}
+  }
   derivePending() {
     const out = [];
     this.clayMod.THEMES.forEach((t) => {
@@ -732,6 +757,7 @@ class Component extends DCLogic {
     }
     const clay = this.clay; const h = React.createElement;
     const id = S.houseId; const T = this.themeOf(id); const FURN = this.furnOf(id); const set = this.setOf(id);
+    const favKey = id + '|' + S.companion; if (favKey !== this._favKey) { this._favKey = favKey; this.updateFavicon(); }
     const built = this.houseData(id).built; const bk = built.map((b) => b.key);
     const nf = this.nextFurn(id);
     const M = this.mode();
