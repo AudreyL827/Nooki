@@ -222,14 +222,14 @@ export function makeSets2(React, clay) {
     const cap = (side) => h('span', { key: 'c' + side, style: { position: 'absolute', [side]: '4px', top: '11px', width: '14px', height: '7px', borderRadius: '50%', background: sh(T.wood, .1) } });
     const node = h('div', { style: Object.assign({ position: 'relative', width: '152px', height: '90px' }, gf(g)) }, [
       post('left'), post('right'), cap('left'), cap('right'),
-      // ropes from each post top down to the cloth ends
-      h('span', { key: 'r1', style: { position: 'absolute', left: '13px', top: '16px', width: '28px', height: '3px', background: '#c9b58e', transform: 'rotate(26deg)', transformOrigin: '0 50%', borderRadius: '2px' } }),
-      h('span', { key: 'r2', style: { position: 'absolute', right: '13px', top: '16px', width: '28px', height: '3px', background: '#c9b58e', transform: 'rotate(-26deg)', transformOrigin: '100% 50%', borderRadius: '2px' } }),
+      // ropes anchored right at each post cap, angling down to the cloth ends
+      h('span', { key: 'r1', style: { position: 'absolute', left: '10px', top: '13px', width: '32px', height: '3px', background: '#c9b58e', transform: 'rotate(26deg)', transformOrigin: '0 50%', borderRadius: '2px' } }),
+      h('span', { key: 'r2', style: { position: 'absolute', right: '10px', top: '13px', width: '32px', height: '3px', background: '#c9b58e', transform: 'rotate(-26deg)', transformOrigin: '100% 50%', borderRadius: '2px' } }),
       // slung cloth between the ropes
       h('span', { key: 'cl', style: { position: 'absolute', left: '28px', top: '24px', width: '96px', height: '34px', borderRadius: '0 0 56px 56px', background: `repeating-linear-gradient(90deg, ${T.accent} 0 14px, #fdfaf0 14px 28px)`, boxShadow: 'inset 0 -6px 9px rgba(80,120,135,.25), inset 0 3px 4px rgba(255,255,255,.5)' } },
         [0, 1, 2, 3, 4].map((i) => h('span', { key: 'fr' + i, style: { position: 'absolute', left: 12 + i * 18 + 'px', bottom: '-6px', width: '2.5px', height: '8px', background: '#c9b58e', borderRadius: '2px' } })))
     ]);
-    return [sprite('bhm', 128, 208, 0, node)];
+    return [sprite('bhm', 146, 202, 0, node)];
   };
 
   BC.surfboard = (T, g) => {
@@ -356,7 +356,7 @@ export function makeSets2(React, clay) {
   const BEACH_FURN = [
     { key: 'window', label: 'Window to the Sea', icon: '🌊', cx: 24, cy: 101, fw: 40, fd: 140, bx: 64, by: 102, wall: true, fx: 101, fy: -111 },
     { key: 'rug', label: 'Woven Beach Rug', icon: '🧶', cx: 150, cy: 208, fw: 132, fd: 112, bx: 150, by: 208, flat: true },
-    { key: 'hammock', label: 'Hammock', icon: '🏖', cx: 128, cy: 214, fw: 132, fd: 40, bx: 128, by: 258, sdy: 30 },
+    { key: 'hammock', label: 'Hammock', icon: '🏖', cx: 146, cy: 208, fw: 132, fd: 40, bx: 128, by: 258, sdy: 30 },
     { key: 'surfboard', label: 'Surfboard', icon: '🏄', cx: 262, cy: 36, fw: 44, fd: 30, bx: 258, by: 84, sdy: 46 },
     { key: 'shellshelf', label: 'Shell Shelf', icon: '🐚', cx: 105, cy: 20, fw: 88, fd: 28, bx: 105, by: 72, wall: true, fx: 105, fy: -117 },
     { key: 'desk', label: 'Driftwood Desk', icon: '🪵', cx: 75, cy: 256, fw: 94, fd: 54, bx: 75, by: 296, sdy: 14 },
@@ -402,14 +402,16 @@ export function makeSets2(React, clay) {
 
   FD.logstack = (T, g) => {
     // pyramid of three logs, each with a tree-ring end so it reads as a woodpile
-    const ring = (x, y, z0, c) => g ? null : h('div', { key: 'rg' + x + z0, style: { position: 'absolute', left: x + 'px', top: (y + 15) + 'px', width: '15px', height: '15px', transformOrigin: '0 0', transform: `translateZ(${z0 + 15}px) rotateX(-90deg) rotateY(90deg)`, borderRadius: '50%', background: `repeating-radial-gradient(circle at 50% 50%, ${sh(c, .2)} 0 2px, ${sh(c, .02)} 2px 4px)`, boxShadow: 'inset 0 0 3px rgba(90,64,40,.3)' } });
+    const ring = (k, x, y, z0, c) => g ? null : h('div', { key: k, style: { position: 'absolute', left: x + 'px', top: (y + 15) + 'px', width: '15px', height: '15px', transformOrigin: '0 0', transform: `translateZ(${z0 + 15}px) rotateX(-90deg) rotateY(90deg)`, borderRadius: '50%', background: `repeating-radial-gradient(circle at 50% 50%, ${sh(c, .2)} 0 2px, ${sh(c, .02)} 2px 4px)`, boxShadow: 'inset 0 0 3px rgba(90,64,40,.3)' } });
     const c1 = T.wood, c2 = sh(T.wood, -.08), c3 = sh(T.wood, .08);
-    return [
+    // flat element list so React renders every log (a nested array literal dropped
+    // two of the three); rings get unique keys so both bottom ends show.
+    return [].concat(
       box('fl1', { x: 234, y: 8, w: 46, d: 15, ht: 15, r: 7, c: c1, ghost: g }),
       box('fl2', { x: 234, y: 26, w: 46, d: 15, ht: 15, r: 7, c: c2, ghost: g }),
       box('fl3', { x: 237, y: 17, w: 40, d: 15, ht: 15, r: 7, z0: 15, c: c3, ghost: g }),
-      ring(234, 8, 0, c1), ring(234, 26, 0, c2), ring(237, 17, 15, c3)
-    ].filter(Boolean);
+      [ring('flr1', 234, 8, 0, c1), ring('flr2', 234, 26, 0, c2), ring('flr3', 237, 17, 15, c3)].filter(Boolean)
+    );
   };
 
   FD.window = (T, g) => onWallL('fwn', 44, 74, 108, 86,
@@ -431,8 +433,13 @@ export function makeSets2(React, clay) {
   );
 
   FD.stump = (T, g) => {
-    const els = puck('fst', { x: 184, y: 200, w: 44, d: 40, ht: 26, c: T.wood, ghost: g });
-    if (!g) els.push(h('div', { key: 'fstR', style: { position: 'absolute', left: '189px', top: '204px', width: '34px', height: '31px', transform: 'translateZ(26.6px)', borderRadius: '50%', background: `repeating-radial-gradient(ellipse at 50% 50%, ${sh(T.wood, .28)} 0 4px, ${sh(T.wood, .12)} 4px 8px)` } }));
+    // a fallen log resting on its side — a little side table tucked toward the back corner
+    const X = 202, Y = 96, W = 60, D = 24, HT = 24;
+    const els = box('fst', { x: X, y: Y, w: W, d: D, ht: HT, r: 12, c: T.wood, ghost: g });
+    if (!g) {
+      // tree-ring cross-section on the near (right) end of the log
+      els.push(h('div', { key: 'fstR', style: { position: 'absolute', left: (X + W) + 'px', top: (Y + D) + 'px', width: D + 'px', height: HT + 'px', transformOrigin: '0 0', transform: `translateZ(${HT}px) rotateX(-90deg) rotateY(90deg)`, borderRadius: '50%', background: `repeating-radial-gradient(circle at 50% 50%, ${sh(T.wood, .26)} 0 4px, ${sh(T.wood, .08)} 4px 8px)`, boxShadow: 'inset 0 0 4px rgba(90,64,40,.3)' } }));
+    }
     return els;
   };
 
@@ -446,7 +453,8 @@ export function makeSets2(React, clay) {
       h('span', { key: 'wn', style: { position: 'absolute', left: '20px', top: '30px', width: '6px', height: '8px', borderRadius: '3px 3px 5px 5px', background: '#ffdf9e', boxShadow: g ? 'none' : '0 0 8px 2px rgba(255,223,158,.8)' } }),
       h('span', { key: 'gr', style: { position: 'absolute', left: '8px', top: '46px', width: '30px', height: '10px', borderRadius: '50%', background: '#8fa070', opacity: .7 } })
     ]);
-    return [sprite('fml', 254, 172, 0, node), g ? null : shadowOval('fmls', 254, 174, 40, 18, .16)].filter(Boolean);
+    // sits centered on top of the log side-table (z = log height)
+    return [sprite('fml', 236, 110, 24, node)];
   };
 
   FD.quiltchair = (T, g) => [].concat(
@@ -536,8 +544,8 @@ export function makeSets2(React, clay) {
     { key: 'fireplace', label: 'Stone Fireplace', icon: '🔥', cx: 196, cy: 29, fw: 100, fd: 52, bx: 196, by: 84, sdy: 24 },
     { key: 'logstack', label: 'Log Stack', icon: '🪵', cx: 270, cy: 26, fw: 44, fd: 38, bx: 264, by: 72, sdy: 12 },
     { key: 'bench', label: 'Log Bench', icon: '🪑', cx: 129, cy: 218, fw: 92, fd: 38, bx: 129, by: 258, sdy: 10 },
-    { key: 'stump', label: 'Stump Table', icon: '🍄', cx: 206, cy: 220, fw: 46, fd: 42, bx: 206, by: 262, sdy: 10 },
-    { key: 'mushlamp', label: 'Mushroom Lamp', icon: '🍄', cx: 254, cy: 173, fw: 48, fd: 36, bx: 230, by: 200, sdy: 32 },
+    { key: 'stump', label: 'Log Side Table', icon: '🪵', cx: 232, cy: 108, fw: 60, fd: 24, bx: 206, by: 262, sdy: 10 },
+    { key: 'mushlamp', label: 'Mushroom Lamp', icon: '🍄', cx: 236, cy: 122, fw: 48, fd: 36, bx: 230, by: 200, sdy: 32 },
     { key: 'quiltchair', label: 'Quilted Armchair', icon: '🛋', cx: 53, cy: 168, fw: 58, fd: 80, bx: 112, by: 172, sdy: 10 },
     { key: 'pinecones', label: 'Pinecone Garland', icon: '🌰', cx: 24, cy: 222, fw: 30, fd: 112, bx: 66, by: 222, wall: true, fx: 222, fy: -155 },
     { key: 'acornshelf', label: 'Acorn Shelf', icon: '🐿', cx: 100, cy: 20, fw: 82, fd: 28, bx: 100, by: 72, wall: true, fx: 100, fy: -115 },

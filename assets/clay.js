@@ -74,6 +74,12 @@ export function makeClay(React) {
 
   // ---- color utils ----
   const hx = (c) => {
+    // accept both '#rrggbb' hex and 'rgb(r,g,b)' so sh()/mix() can be nested safely
+    // (shading an already-shaded colour) without producing NaN → transparent faces.
+    if (c[0] === 'r') {
+      const p = c.slice(c.indexOf('(') + 1).split(',').map((n) => parseInt(n, 10));
+      return [p[0], p[1], p[2]];
+    }
     const s = c.replace('#', '');
     return [parseInt(s.slice(0, 2), 16), parseInt(s.slice(2, 4), 16), parseInt(s.slice(4, 6), 16)];
   };
