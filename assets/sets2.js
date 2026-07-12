@@ -426,20 +426,21 @@ export function makeSets2(React, clay) {
       h('div', { key: 'bar', style: { position: 'absolute', left: '50%', top: '8px', bottom: '8px', width: '5px', marginLeft: '-2.5px', background: '#f7ead6', borderRadius: '3px' } })
     ]));
 
-  FD.bench = (T, g) => [].concat(
-    box('fbn', { x: 84, y: 200, w: 90, d: 34, ht: 16, r: 14, z0: 18, cols: g ? null : [sh(T.wood, .2), sh(T.wood, .02), sh(T.wood, -.14)], c: T.wood, ghost: g }),
-    box('fbl1', { x: 90, y: 206, w: 12, d: 22, ht: 18, r: 5, c: sh(T.wood, -.14), ghost: g }),
-    box('fbl2', { x: 156, y: 206, w: 12, d: 22, ht: 18, r: 5, c: sh(T.wood, -.14), ghost: g })
-  );
+  FD.bench = (T, g) => {
+    // a fallen log to perch on — lies horizontally with a tree-ring end
+    const X = 82, Y = 202, W = 94, D = 28, HT = 26;
+    const els = box('fbn', { x: X, y: Y, w: W, d: D, ht: HT, r: 13, cols: g ? null : [sh(T.wood, .2), sh(T.wood, .02), sh(T.wood, -.14)], c: T.wood, ghost: g });
+    if (!g) {
+      // tree-ring cross-section on the near (right) end
+      els.push(h('div', { key: 'fbnR', style: { position: 'absolute', left: (X + W) + 'px', top: (Y + D) + 'px', width: D + 'px', height: HT + 'px', transformOrigin: '0 0', transform: `translateZ(${HT}px) rotateX(-90deg) rotateY(90deg)`, borderRadius: '50%', background: `repeating-radial-gradient(circle at 50% 50%, ${sh(T.wood, .24)} 0 4px, ${sh(T.wood, .06)} 4px 8px)`, boxShadow: 'inset 0 0 4px rgba(90,64,40,.3)' } }));
+    }
+    return els;
+  };
 
   FD.stump = (T, g) => {
-    // a fallen log resting on its side — a little side table tucked toward the back corner
-    const X = 202, Y = 96, W = 60, D = 24, HT = 24;
-    const els = box('fst', { x: X, y: Y, w: W, d: D, ht: HT, r: 12, c: T.wood, ghost: g });
-    if (!g) {
-      // tree-ring cross-section on the near (right) end of the log
-      els.push(h('div', { key: 'fstR', style: { position: 'absolute', left: (X + W) + 'px', top: (Y + D) + 'px', width: D + 'px', height: HT + 'px', transformOrigin: '0 0', transform: `translateZ(${HT}px) rotateX(-90deg) rotateY(90deg)`, borderRadius: '50%', background: `repeating-radial-gradient(circle at 50% 50%, ${sh(T.wood, .26)} 0 4px, ${sh(T.wood, .08)} 4px 8px)`, boxShadow: 'inset 0 0 4px rgba(90,64,40,.3)' } }));
-    }
+    // a tree-stump side table set beside the sofa, at the back edge of the rug
+    const els = puck('fst', { x: 88, y: 150, w: 44, d: 40, ht: 26, c: T.wood, ghost: g });
+    if (!g) els.push(h('div', { key: 'fstR', style: { position: 'absolute', left: '93px', top: '154px', width: '34px', height: '31px', transform: 'translateZ(26.6px)', borderRadius: '50%', background: `repeating-radial-gradient(ellipse at 50% 50%, ${sh(T.wood, .28)} 0 4px, ${sh(T.wood, .12)} 4px 8px)` } }));
     return els;
   };
 
@@ -453,8 +454,8 @@ export function makeSets2(React, clay) {
       h('span', { key: 'wn', style: { position: 'absolute', left: '20px', top: '30px', width: '6px', height: '8px', borderRadius: '3px 3px 5px 5px', background: '#ffdf9e', boxShadow: g ? 'none' : '0 0 8px 2px rgba(255,223,158,.8)' } }),
       h('span', { key: 'gr', style: { position: 'absolute', left: '8px', top: '46px', width: '30px', height: '10px', borderRadius: '50%', background: '#8fa070', opacity: .7 } })
     ]);
-    // sits centered on top of the log side-table (z = log height)
-    return [sprite('fml', 236, 110, 24, node)];
+    // sits on top of the stump side-table (z = stump height), beside the sofa
+    return [sprite('fml', 110, 168, 26, node)];
   };
 
   FD.quiltchair = (T, g) => [].concat(
@@ -543,9 +544,9 @@ export function makeSets2(React, clay) {
     { key: 'rug', label: 'Mossy Rug', icon: '🌿', cx: 155, cy: 205, fw: 128, fd: 100, bx: 155, by: 205, flat: true },
     { key: 'fireplace', label: 'Stone Fireplace', icon: '🔥', cx: 196, cy: 29, fw: 100, fd: 52, bx: 196, by: 84, sdy: 24 },
     { key: 'logstack', label: 'Log Stack', icon: '🪵', cx: 270, cy: 26, fw: 44, fd: 38, bx: 264, by: 72, sdy: 12 },
-    { key: 'bench', label: 'Log Bench', icon: '🪑', cx: 129, cy: 218, fw: 92, fd: 38, bx: 129, by: 258, sdy: 10 },
-    { key: 'stump', label: 'Log Side Table', icon: '🪵', cx: 232, cy: 108, fw: 60, fd: 24, bx: 206, by: 262, sdy: 10 },
-    { key: 'mushlamp', label: 'Mushroom Lamp', icon: '🍄', cx: 236, cy: 122, fw: 48, fd: 36, bx: 230, by: 200, sdy: 32 },
+    { key: 'bench', label: 'Log Bench', icon: '🪵', cx: 128, cy: 216, fw: 94, fd: 28, bx: 129, by: 258, sdy: 10 },
+    { key: 'stump', label: 'Stump Table', icon: '🍄', cx: 110, cy: 170, fw: 44, fd: 40, bx: 206, by: 262, sdy: 10 },
+    { key: 'mushlamp', label: 'Mushroom Lamp', icon: '🍄', cx: 110, cy: 176, fw: 48, fd: 36, bx: 230, by: 200, sdy: 32 },
     { key: 'quiltchair', label: 'Quilted Armchair', icon: '🛋', cx: 53, cy: 168, fw: 58, fd: 80, bx: 112, by: 172, sdy: 10 },
     { key: 'pinecones', label: 'Pinecone Garland', icon: '🌰', cx: 24, cy: 222, fw: 30, fd: 112, bx: 66, by: 222, wall: true, fx: 222, fy: -155 },
     { key: 'acornshelf', label: 'Acorn Shelf', icon: '🐿', cx: 100, cy: 20, fw: 82, fd: 28, bx: 100, by: 72, wall: true, fx: 100, fy: -115 },
