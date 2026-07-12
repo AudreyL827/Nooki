@@ -109,6 +109,10 @@
           <sc-if value="{{ autoOn }}" hint-placeholder-val="{{ false }}">
             <div style="margin-top: 6px; text-align: center; font-size: 11px; color: #b3ae8b;">sessions flow non-stop · finished pieces queue up to name anytime</div>
           </sc-if>
+          <div style="display: flex; gap: 6px; margin-top: 7px;">
+            <button onClick="{{ toggleSound }}" title="mute or unmute sounds" style="flex: 1; font-weight: 500; font-size: 12px; color: {{ soundInk }}; background: {{ soundBg }}; border: 2px solid #dfd3ae; border-radius: 999px; padding: 6px 8px; cursor: pointer;">{{ soundLabel }}</button>
+            <button onClick="{{ togglePopup }}" title="desktop notifications when breaks start and end" style="flex: 1; font-weight: 500; font-size: 12px; color: {{ popupInk }}; background: {{ popupBg }}; border: 2px solid #dfd3ae; border-radius: 999px; padding: 6px 8px; cursor: pointer;">{{ popupLabel }}</button>
+          </div>
           <div style="display: flex; justify-content: center; gap: 2px; margin: 14px 0 2px; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 64px; filter: drop-shadow(0 4px 0 rgba(140,135,100,.35)) drop-shadow(0 10px 18px rgba(120,105,60,.2)); animation: floaty 4.6s ease-in-out infinite;">
             <sc-for list="{{ timerChars }}" as="c" hint-placeholder-count="5">
               <span style="display: inline-block; width: {{ c.w }}; text-align: center; background: linear-gradient(180deg, {{ tL }} 10%, {{ tD }} 85%); -webkit-background-clip: text; background-clip: text; color: rgba(0,0,0,0);">{{ c.ch }}</span>
@@ -549,7 +553,8 @@ class Component extends DCLogic {
     phase: 'idle', running: false, leftS: 0, focusCount: 0,
     modal: null, namingText: '', namingFor: null, justBuilt: null, celebrating: false, completeId: null,
     companion: 'bunny', spSetupOpen: false, spShowLists: false, spClientInput: '', spTick: 0,
-    auto: false, blueprintOpen: true, houses: null
+    auto: false, blueprintOpen: true, houses: null,
+    soundOn: true, popupOn: true
   };
 
   // ---------- lifecycle ----------
@@ -567,24 +572,59 @@ class Component extends DCLogic {
       try { const audioMod = await import('./assets/audio.js'); this.audio = audioMod.makeAudio(); } catch (e) { this.audio = null; }
       try { this._spotifyMod = await import('./assets/spotify.js'); this.initSpotify(); await this.spotify.handleRedirect(); if (this.spotify.isLinked()) { this.spotify.start(); this.loadPlaylists(); } } catch (e) { this.spotify = null; }
       try { this._cloudMod = await import('./assets/cloud.js'); this.cloud = this._cloudMod.makeCloud({ config: firebaseConfig(), onChange: () => this.onCloudChange() }); if (this.cloud.enabled()) this.cloud.init(); } catch (e) { this.cloud = null; }
+      // register the service worker so break alerts reach the desktop / phone even
+      // when Nooki is in a background tab or minimised (no-op over file://)
+      try { if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').then((reg) => { this._sw = reg; }).catch(() => {}); } catch (e) {}
       this._shownDone = {};
       clayMod.THEMES.forEach((t) => { if (this.state.houses[t.id] && this.state.houses[t.id].built.length >= this.furnOf(t.id).length) this._shownDone[t.id] = true; });
       this._last = Date.now();
       this._int = setInterval(() => this.tick(), 300);
       this._onResize = () => this.setState({ vw: window.innerWidth });
       window.addEventListener('resize', this._onResize);
+      // Ask the browser for notification permission on the first interaction, so the
+      // native "Nooki wants to send notifications" prompt appears right after launch
+      // (Safari + Chrome require a user gesture to show it). One-shot, then removes itself.
+      this._askOnce = () => { document.removeEventListener('pointerdown', this._askOnce); if (this.state.popupOn !== false) this.askNotify(); };
+      document.addEventListener('pointerdown', this._askOnce, { once: true });
       let firstRun = false; try { firstRun = !localStorage.getItem('nooki.onboarded'); } catch (e) {}
       this.setState({ ready: true, vw: window.innerWidth, modal: firstRun ? 'welcome' : null, tourStep: 0 });
     } catch (e) { console.error('prototype failed to load art library', e); }
   }
-  componentWillUnmount() { if (this._int) clearInterval(this._int); if (this._onResize) window.removeEventListener('resize', this._onResize); }
+  componentWillUnmount() { if (this._int) clearInterval(this._int); if (this._onResize) window.removeEventListener('resize', this._onResize); if (this._askOnce) document.removeEventListener('pointerdown', this._askOnce); }
 
   // ---------- audio (UI sound effects) ----------
-  sfx(n) { try { if (this.audio) this.audio.sfx(n); } catch (e) {} }
+  sfx(n) { try { if (this.audio && this.state.soundOn !== false) this.audio.sfx(n); } catch (e) {} }
   // phone / desktop notifications (works in the installed PWA; becomes native on-device
   // via Capacitor Local Notifications when packaged for the App Store)
-  askNotify() { try { if (typeof Notification !== 'undefined' && Notification.permission === 'default') Notification.requestPermission(); } catch (e) {} }
-  notify(title, body) { try { if (typeof Notification !== 'undefined' && Notification.permission === 'granted') new Notification(title, { body, icon: './icon-180.png', badge: './icon-180.png', tag: 'nooki' }); } catch (e) {} }
+  askNotify() {
+    try {
+      if (typeof Notification === 'undefined' || Notification.permission !== 'default') return;
+      // Safari returns a promise on some versions and uses a callback on others — handle both
+      const r = Notification.requestPermission();
+      if (r && typeof r.then === 'function') r.then((p) => { if (p === 'granted') this.notify('nooki ✦ notifications on', "you'll get a nudge when breaks start and end ♡"); });
+    } catch (e) {}
+  }
+  notify(title, body) {
+    try {
+      if (this.state.popupOn === false) return;
+      if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
+      const opts = { body, icon: './icon-180.png', badge: './icon-180.png', tag: 'nooki', renotify: true };
+      // prefer the service worker: its notifications show reliably while Nooki is in a
+      // background tab or the installed PWA is minimised. fall back to a page Notification.
+      if (this._sw && this._sw.showNotification) { this._sw.showNotification(title, opts); return; }
+      new Notification(title, opts);
+    } catch (e) {}
+  }
+  // fire a native browser / OS notification (top-right on Mac, like Gmail) for a
+  // moment worth announcing. shows only if the user has allowed notifications.
+  announce(title, body) { this.notify(title, body); }
+  // break began (session ended) — wording changes with short vs long break
+  announceBreak(isLong) {
+    this.announce(
+      'nooki ✦ ' + (isLong ? 'long break' : 'short break'),
+      isLong ? 'long break, you earned it — stretch, breathe, wander ♡' : 'short break ♡ stretch, sip, back soon'
+    );
+  }
 
   // ---------- spotify ----------
   initSpotify() {
@@ -629,8 +669,10 @@ class Component extends DCLogic {
     this.state.viewHouse = this.state.houseId;
     this.state.companion = d.companion || 'bunny';
     this.state.auto = !!d.auto;
+    if (typeof d.soundOn === 'boolean') this.state.soundOn = d.soundOn;
+    if (typeof d.popupOn === 'boolean') this.state.popupOn = d.popupOn;
   }
-  savePayload() { return { houses: this.state.houses, houseId: this.state.houseId, companion: this.state.companion, auto: this.state.auto }; }
+  savePayload() { return { houses: this.state.houses, houseId: this.state.houseId, companion: this.state.companion, auto: this.state.auto, soundOn: this.state.soundOn, popupOn: this.state.popupOn }; }
   saveLocal() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(this.savePayload())); } catch (e) {} }
   save() { this.saveLocal(); if (this.cloud && this._cloudUser) this.cloud.save(this.savePayload()); }
 
@@ -739,7 +781,7 @@ class Component extends DCLogic {
     const cnt = this.state.focusCount + 1;
     this.setState({ running: false, phase: 'idle', leftS: 0, celebrating: true, justBuilt: nf.key, focusCount: cnt });
     this.sfx('complete');
-    this.notify('nooki ✦ session done', 'your ' + (nf.label ? nf.label.toLowerCase() : 'piece') + ' is built — name your win ♡');
+    this.announce('nooki ✦ session done', 'your ' + (nf.label ? nf.label.toLowerCase() : 'piece') + ' is built — name your win ♡');
     this._conf = this.clay.confetti('cf' + Date.now(), { n: 34, spread: 200 });
     const complete = this.state.houses[id].built.length >= this.furnOf(id).length;
     if (this.state.auto) {
@@ -753,6 +795,7 @@ class Component extends DCLogic {
           if (this.state.phase !== 'idle') return;
           this._last = Date.now();
           this.sfx('break');
+          this.announceBreak(isLong);
           this.setState({ phase: isLong ? 'longbreak' : 'break', running: true, leftS: (isLong ? M.long : M.brk) * 60, celebrating: false, justBuilt: null });
         }, 1400);
       }
@@ -785,14 +828,17 @@ class Component extends DCLogic {
       const isLong = cnt > 0 && cnt % M.every === 0;
       this._last = Date.now();
       this.sfx('break');
+      this.announceBreak(isLong);
       this.setState({ modal: null, namingFor: null, celebrating: false, justBuilt: null, phase: isLong ? 'longbreak' : 'break', running: true, leftS: (isLong ? M.long : M.brk) * 60 });
       return;
     }
     this.setState({ modal: null, namingFor: null, celebrating: false, justBuilt: null });
   }
   breakDone() {
+    const wasLong = this.state.phase === 'longbreak';
+    this.sfx('wake');
+    this.announce('nooki ✦ break over', (wasLong ? 'long break' : 'short break') + " done — back to building ♡");
     if (this.state.auto && this.state.screen === 'game' && this.nextFurn(this.state.houseId) && this.state.modal !== 'quit') { this.startFocus(); return; }
-    this.notify('nooki ✦ break over', 'ready for the next session? ♡');
     this.setState({ phase: 'idle', running: false, leftS: 0 });
   }
 
@@ -982,6 +1028,11 @@ class Component extends DCLogic {
       toggleAuto: () => { this.state.auto = !this.state.auto; this.save(); this.setState({ auto: this.state.auto }); },
       autoOn: S.auto, autoLabel: S.auto ? 'auto continue · on ✦' : 'auto continue · off',
       autoBg: S.auto ? '#f3ecd6' : '#fdfaf0', autoInk: S.auto ? '#6c7150' : '#a49f7d',
+      // sound mute + break pop-up alert toggles
+      toggleSound: () => { this.state.soundOn = !this.state.soundOn; this.save(); this.setState({ soundOn: this.state.soundOn }); if (this.state.soundOn) this.sfx('tap'); },
+      soundLabel: S.soundOn === false ? '🔇 sound off' : '🔊 sound on', soundBg: S.soundOn === false ? '#fdfaf0' : '#f3ecd6', soundInk: S.soundOn === false ? '#a49f7d' : '#6c7150',
+      togglePopup: () => { const on = !(this.state.popupOn !== false); this.state.popupOn = on; this.save(); if (on) this.askNotify(); this.setState({ popupOn: on }); if (on) this.sfx('tap'); },
+      popupLabel: S.popupOn === false ? '🔕 alerts off' : '🔔 alerts on', popupBg: S.popupOn === false ? '#fdfaf0' : '#f3ecd6', popupInk: S.popupOn === false ? '#a49f7d' : '#6c7150',
       toggleBlueprint: () => { this.sfx('tap'); this.setState({ blueprintOpen: !S.blueprintOpen }); },
       blueprintOpen: S.blueprintOpen,
       bpToggleLabel: S.blueprintOpen ? '☰ hide blueprint · see more room' : '☰ show blueprint · ' + bk.length + ' / ' + FURN.length,

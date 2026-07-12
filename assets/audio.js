@@ -3,7 +3,7 @@
 // Web Audio API so it ships self-contained. Usage:
 //   const audio = makeAudio(); audio.resume();           // on a user gesture
 //   audio.setTheme('honey'); audio.playMusic();
-//   audio.sfx('start' | 'tap' | 'complete' | 'break' | 'name');
+//   audio.sfx('start' | 'tap' | 'complete' | 'break' | 'wake' | 'name');
 
 export function makeAudio() {
   let ctx = null, master = null, musicBus = null, musicGain = null, lp = null, noiseBuf = null;
@@ -141,6 +141,10 @@ export function makeAudio() {
       tone(1567.98, t + 0.42, 0.5, 'sine', 0.05, bus);
     } else if (name === 'break') {
       [587.33, 440].forEach((f, i) => tone(f, t + i * 0.14, 0.4, 'sine', 0.08, bus));
+    } else if (name === 'wake') {
+      // break's over — a gentle rising two-note chime to nudge back to work
+      [440, 587.33, 783.99].forEach((f, i) => tone(f, t + i * 0.13, 0.42, 'triangle', 0.09, bus));
+      tone(1174.66, t + 0.28, 0.4, 'sine', 0.05, bus);
     } else if (name === 'name') {
       [784, 1046.5].forEach((f, i) => tone(f, t + i * 0.09, 0.5, 'sine', 0.08, bus));
     }
