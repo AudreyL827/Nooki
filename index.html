@@ -88,8 +88,8 @@
 
   <!-- top bar: brand + account -->
   <div style="width: 100%; max-width: 1360px; position: relative; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; box-sizing: border-box;">
-    <div style="display: flex; align-items: center; gap: 7px; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 21px; letter-spacing: 2px; color: rgba(90,85,50,.5);">
-      <span style="font-size: 15px; color: rgba(90,85,50,.42);">✦</span>nooki<span style="font-size: 15px; color: rgba(90,85,50,.42);">✦</span>
+    <div style="display: flex; align-items: center; gap: 7px; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 21px; letter-spacing: 2px; color: rgba(90,85,50,.28);">
+      <span style="font-size: 15px; color: rgba(90,85,50,.22);">✦</span>nooki<span style="font-size: 15px; color: rgba(90,85,50,.22);">✦</span>
     </div>
     <button onClick="{{ openAccount }}" title="account" style="position: absolute; right: 0; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 6px; font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 12.5px; color: #6c7150; background: rgba(251,246,232,.85); border: 1.5px solid #e7dbbd; border-radius: 999px; padding: 6px 13px; cursor: pointer; box-shadow: 0 4px 12px rgba(120,105,60,.12);">{{ accountLabel }}</button>
   </div>
@@ -728,6 +728,17 @@ class Component extends DCLogic {
       link.href = this.faviconDataUri(T, this.state.companion || 'bunny');
     } catch (e) {}
   }
+  // Keep the installed-app title bar (and browser tab color) matching the current
+  // room's page colour, so the window frame blends into the page instead of the
+  // static green from the manifest.
+  updateThemeColor(color) {
+    try {
+      if (!color) return;
+      let m = document.querySelector('meta[name="theme-color"]');
+      if (!m) { m = document.createElement('meta'); m.setAttribute('name', 'theme-color'); document.head.appendChild(m); }
+      m.setAttribute('content', color);
+    } catch (e) {}
+  }
   derivePending() {
     const out = [];
     this.clayMod.THEMES.forEach((t) => {
@@ -851,6 +862,7 @@ class Component extends DCLogic {
     const clay = this.clay; const h = React.createElement;
     const id = S.houseId; const T = this.themeOf(id); const FURN = this.furnOf(id); const set = this.setOf(id);
     const favKey = id + '|' + S.companion; if (favKey !== this._favKey) { this._favKey = favKey; this.updateFavicon(); }
+    if (T.bg !== this._themeColor) { this._themeColor = T.bg; this.updateThemeColor(T.bg); }
     const built = this.houseData(id).built; const bk = built.map((b) => b.key);
     const nf = this.nextFurn(id);
     const M = this.mode();
