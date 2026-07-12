@@ -17,7 +17,7 @@ Read the product doc: **[PRD.md](./PRD.md)**
 - Installable to your phone home screen (PWA), responsive on mobile and desktop
 - First-run onboarding, dynamic tab icon, Privacy Policy and Terms
 
-## For players
+## For Users
 
 Nothing to install or configure. Open the link, press start, and focus. Accounts and Spotify are optional and already set up: just tap "sign in" or "connect spotify" and log into your own account.
 
