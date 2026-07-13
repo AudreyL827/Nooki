@@ -376,7 +376,7 @@ export function makeClay(React) {
       h('div', { key: 'pot', style: { position: 'absolute', left: '13px', bottom: '0', width: '26px', height: '24px', borderRadius: '6px 6px 10px 10px', background: `radial-gradient(circle at 38% 25%, ${sh(T.accent2, .2)}, ${T.accent2})`, boxShadow: 'inset 2px 3px 4px rgba(255,255,255,.5), inset -3px -4px 6px rgba(0,0,0,.12)' } },
         h('div', { style: { position: 'absolute', left: '-2px', top: '-3px', right: '-2px', height: '9px', borderRadius: '5px', background: sh(T.accent2, .12), boxShadow: 'inset 2px 2px 3px rgba(255,255,255,.5)' } }))
     ]);
-    return [sprite('pl', 214, 116, 33, node), g ? null : shadowOval('ps', 214, 118, 40, 22, .14)].filter(Boolean);
+    return [sprite('pl', 130, 104, 0, node), g ? null : shadowOval('ps', 130, 106, 40, 22, .14)].filter(Boolean);
   };
 
   D.clock = (T, g) => onWallL('ck', 196, 108, 46, 46,
@@ -484,7 +484,7 @@ export function makeClay(React) {
     { key: 'armchair', label: 'Reading Armchair', icon: '💺', cx: 60, cy: 180, fw: 66, fd: 88, bx: 122, by: 185, sdy: 10 },
     { key: 'coffeetable', label: 'Coffee Table', icon: '🫖', cx: 151, cy: 164, fw: 90, fd: 60, bx: 151, by: 208, sdy: 6 },
     { key: 'stool', label: 'Side Stool', icon: '🪑', cx: 105, cy: 60, fw: 44, fd: 42, bx: 110, by: 106, sdy: 8 },
-    { key: 'plant', label: 'Potted Plant', icon: '🪴', cx: 214, cy: 116, fw: 40, fd: 36, bx: 214, by: 156, sdy: 32 },
+    { key: 'plant', label: 'Potted Plant', icon: '🪴', cx: 130, cy: 104, fw: 40, fd: 36, bx: 214, by: 156, sdy: 12 },
     { key: 'clock', label: 'Wall Clock', icon: '🕰', cx: 24, cy: 219, fw: 36, fd: 50, bx: 62, by: 222, wall: true, fx: 219, fy: -131 },
     { key: 'frame', label: 'Picture Frame', icon: '🖼', cx: 146, cy: 22, fw: 90, fd: 36, bx: 146, by: 62, wall: true, fx: 146, fy: -124 },
     { key: 'sconce', label: 'Wall Lamp', icon: '💡', cx: 239, cy: 22, fw: 42, fd: 36, bx: 239, by: 62, wall: true, fx: 239, fy: -133 },
